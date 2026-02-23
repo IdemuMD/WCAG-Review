@@ -1,0 +1,175 @@
+/* Basic Reset and Accessibility */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    width: 100%;
+}
+
+/* Assessment Card */
+.assessment-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.assessment-card header h2 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+/* Image */
+figure {
+    margin: 0 0 1.5rem 0;
+}
+
+.website-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+/* Sections */
+section {
+    margin-bottom: 1.5rem;
+}
+
+section h3 {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.25rem;
+    display: inline-block;
+}
+
+section p {
+    margin-bottom: 0.75rem;
+}
+
+/* Criteria List */
+section ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+section ul li {
+    margin-bottom: 0.25rem;
+}
+
+/* Score Display */
+.score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.score-number {
+    font-size: 2.5rem;
+}
+
+.score-max {
+    color: #7f8c8d;
+    font-size: 1.5rem;
+}
+
+/* Visit Button */
+footer {
+    margin-top: 1rem;
+}
+
+.visit-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.visit-button:hover {
+    background-color: #2980b9;
+}
+
+.visit-button:focus {
+    outline: 3px solid #f39c12;
+    outline-offset: 2px;
+}
+
+/* Page Footer */
+.page-footer {
+    background-color: #34495e;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.page-footer p {
+    font-size: 0.9rem;
+}
+
+/* Accessibility - Focus styles */
+*:focus {
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.25rem;
+    }
+
+    .assessment-card {
+        padding: 1rem;
+    }
+
+    .score {
+        font-size: 1.5rem;
+    }
+
+    .score-number {
+        font-size: 2rem;
+    }
+}
+
