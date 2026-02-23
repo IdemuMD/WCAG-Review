@@ -18,5 +18,11 @@ router.get('/assessment/:id', (req, res) => {
     }
 });
 
+// Route to add new assessment
+router.post('/add', (req, res) => {
+    wcagController.addAssessment(req.body);
+    res.redirect('/');
+});
+
 module.exports = router;
 

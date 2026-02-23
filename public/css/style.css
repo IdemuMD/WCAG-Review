@@ -31,14 +31,23 @@ header h1 {
 /* Main Content */
 main {
     flex: 1;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
     width: 100%;
 }
 
-/* Assessment Card */
-.assessment-card {
+/* Section Headers */
+main h2 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #3498db;
+}
+
+/* Form Section */
+.form-section {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -46,73 +55,160 @@ main {
     margin-bottom: 2rem;
 }
 
-.assessment-card header h2 {
-    font-size: 1.5rem;
-    color: #2c3e50;
-    margin-bottom: 1rem;
+.assessment-form {
+    display: grid;
+    gap: 1rem;
 }
 
-/* Image */
-figure {
-    margin: 0 0 1.5rem 0;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
-.website-image {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    border-radius: 4px;
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #555;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.75rem;
     border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.submit-button {
+    background-color: #3498db;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    justify-self: start;
+}
+
+.submit-button:hover {
+    background-color: #2980b9;
+}
+
+.submit-button:focus {
+    outline: 3px solid #f39c12;
+    outline-offset: 2px;
+}
+
+/* Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Assessment Card */
+.assessment-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assessment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.assessment-card header {
+    background-color: #34495e;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.assessment-card header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Card Image */
+.assessment-card figure {
+    margin: 0;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
     display: block;
 }
 
-/* Sections */
-section {
-    margin-bottom: 1.5rem;
+/* Card Content */
+.card-content {
+    padding: 1rem;
+    flex: 1;
 }
 
-section h3 {
-    font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 0.5rem;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 0.25rem;
-    display: inline-block;
+.card-content section {
+    margin-bottom: 1rem;
 }
 
-section p {
-    margin-bottom: 0.75rem;
+.card-content section h4 {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
 }
 
-/* Criteria List */
-section ul {
+.card-content section p {
+    font-size: 0.95rem;
+}
+
+.card-content ul {
     list-style-type: disc;
-    padding-left: 1.5rem;
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
 }
 
-section ul li {
+.card-content ul li {
     margin-bottom: 0.25rem;
 }
 
 /* Score Display */
 .score {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #27ae60;
 }
 
 .score-number {
-    font-size: 2.5rem;
+    font-size: 2rem;
 }
 
 .score-max {
     color: #7f8c8d;
-    font-size: 1.5rem;
 }
 
 /* Visit Button */
-footer {
-    margin-top: 1rem;
+.assessment-card footer {
+    padding: 1rem;
+    background-color: #ecf0f1;
+    text-align: center;
 }
 
 .visit-button {
@@ -135,6 +231,14 @@ footer {
     outline-offset: 2px;
 }
 
+/* No Assessments */
+.no-assessments {
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
 /* Page Footer */
 .page-footer {
     background-color: #34495e;
@@ -155,21 +259,39 @@ footer {
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     header h1 {
-        font-size: 1.25rem;
-    }
-
-    .assessment-card {
-        padding: 1rem;
-    }
-
-    .score {
         font-size: 1.5rem;
     }
 
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .submit-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding: 0 0.75rem;
+    }
+
+    .assessment-card header h3 {
+        font-size: 1.1rem;
+    }
+
+    .score {
+        font-size: 1.25rem;
+    }
+
     .score-number {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 }
 
