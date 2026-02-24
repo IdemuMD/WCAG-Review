@@ -1,76 +1,106 @@
-// Static WCAG assessment data (no database)
-let assessments = [
-    {
-        id: 1,
-        websiteName: 'Example Portal',
-        websiteUrl: 'https://www.example.com',
-        imageUrl: 'https://via.placeholder.com/600x400?text=Example+Portal',
-        assessment: 'Nettsiden har god tilgjengelighet med klare kontraster og semantisk HTML. Noen mindre forbedringer kan gjøres på lenke-tekst og skjema-labels.',
-        score: 4,
-        username: 'admin',
-        criteriaChecked: [
-            'Tilstrekkelig kontrast (4.5:1 for normal tekst)',
-            'Semantiske overskriftsstrukturer',
-            'Alt-tekst på bilder',
-            'Tydelig fokus-indikator'
-        ]
-    },
-    {
-        id: 2,
-        websiteName: 'Norsk Helsenett',
-        websiteUrl: 'https://www.nhn.no',
-        imageUrl: 'https://via.placeholder.com/600x400?text=Norsk+Helsenett',
-        assessment: 'God tilgjengelighet generelt. Bør forbedre skjema-labels og gi mer tid på automatisk utlogging.',
-        score: 3,
-        username: 'tester1',
-        criteriaChecked: [
-            'Kontrast er god',
-            'Navigasjon er logisk',
-            'Mangler noen alt-tekster'
-        ]
-    },
-    {
-        id: 3,
-        websiteName: 'NAV',
-        websiteUrl: 'https://www.nav.no',
-        imageUrl: 'https://via.placeholder.com/600x400?text=NAV',
-        assessment: 'Omfattende nettside med god tilgjengelighet. Noen komplekse skjemaer kan være utfordrende for skjermlesere.',
-        score: 4,
-        username: 'wcag_expert',
-        criteriaChecked: [
-            'God kontrast',
-            'Tydelig navigasjon',
-            'Alt-tekst på viktige bilder'
-        ]
+const User = require('../models/User');
+const Website = require('../models/Website');
+const Review = require('../models/Review');
+
+// Get all reviews with user and website info
+async function getAllAssessments() {
+    try {
+        const reviews = await Review.find()
+            .populate('user', 'username')
+            .populate('website', 'name url imageUrl')
+            .sort({ createdAt: -1 })
+            .lean();
+        
+        return reviews.map(review => ({
+            id: review._id,
+            websiteName: review.website.name,
+            websiteUrl: review.website.url,
+            imageUrl: review.website.imageUrl,
+            assessment: review.assessment,
+            score: review.score,
+            username: review.user.username,
+            criteriaChecked: review.criteriaChecked || [],
+            createdAt: review.createdAt
+        }));
+    } catch (error) {
+        console.error('Error fetching assessments:', error);
+        return [];
     }
-];
-
-let nextId = 4;
-
-// Get all assessments
-function getAllAssessments() {
-    return assessments;
 }
 
-// Get single assessment by ID
-function getAssessmentById(id) {
-    return assessments.find(assessment => assessment.id === parseInt(id));
+// Get single review by ID
+async function getAssessmentById(id) {
+    try {
+        const review = await Review.findById(id)
+            .populate('user', 'username')
+            .populate('website', 'name url imageUrl')
+            .lean();
+        
+        if (!review) return null;
+        
+        return {
+            id: review._id,
+            websiteName: review.website.name,
+            websiteUrl: review.website.url,
+            imageUrl: review.website.imageUrl,
+            assessment: review.assessment,
+            score: review.score,
+            username: review.user.username,
+            criteriaChecked: review.criteriaChecked || [],
+            createdAt: review.createdAt
+        };
+    } catch (error) {
+        console.error('Error fetching assessment:', error);
+        return null;
+    }
 }
 
 // Add new assessment
-function addAssessment(assessment) {
-    const newAssessment = {
-        id: nextId++,
-        websiteName: assessment.websiteName,
-        websiteUrl: assessment.websiteUrl,
-        imageUrl: assessment.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image',
-        assessment: assessment.assessment,
-        score: parseInt(assessment.score) || 3,
-        username: assessment.username || 'Anonym',
-        criteriaChecked: assessment.criteriaChecked ? assessment.criteriaChecked.split(',').map(c => c.trim()) : []
-    };
-    assessments.push(newAssessment);
-    return newAssessment;
+async function addAssessment(data) {
+    try {
+        // Find or create user
+        let user = await User.findOne({ username: data.username });
+        if (!user) {
+            user = new User({ username: data.username });
+            await user.save();
+        }
+
+        // Find or create website
+        let website = await Website.findOne({ url: data.websiteUrl });
+        if (!website) {
+            website = new Website({
+                name: data.websiteName,
+                url: data.websiteUrl,
+                imageUrl: data.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image'
+            });
+            await website.save();
+        }
+
+        // Create review
+        const review = new Review({
+            user: user._id,
+            website: website._id,
+            score: parseInt(data.score) || 3,
+            assessment: data.assessment,
+            criteriaChecked: data.criteriaChecked ? data.criteriaChecked.split(',').map(c => c.trim()).filter(c => c) : []
+        });
+
+        await review.save();
+        
+        return {
+            id: review._id,
+            websiteName: website.name,
+            websiteUrl: website.url,
+            imageUrl: website.imageUrl,
+            assessment: review.assessment,
+            score: review.score,
+            username: user.username,
+            criteriaChecked: review.criteriaChecked
+        };
+    } catch (error) {
+        console.error('Error adding assessment:', error);
+        throw error;
+    }
 }
 
 module.exports = {

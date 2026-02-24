@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const connectDB = require('./config/database');
 const wcagRoutes = require('./routes/wcagRoutes');
 
 const app = express();
@@ -15,11 +16,23 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Use routes
-app.use('/', wcagRoutes);
+// Connect to MongoDB and start server
+async function startServer() {
+    try {
+        await connectDB();
+        
+        // Use routes
+        app.use('/', wcagRoutes);
+        
+        // Start server
+        app.listen(PORT, () => {
+            console.log(`Server is running on http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+startServer();
 
