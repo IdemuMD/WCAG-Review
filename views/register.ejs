@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrer - WCAG Vurderinger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <h2>Registrer ny bruker</h2>
+            
+            <% if (error) { %>
+                <div class="error-message" role="alert">
+                    <p><%= error %></p>
+                </div>
+            <% } %>
+            
+            <form action="/register" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username">Brukernavn</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Passord</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Bekreft passord</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn-primary">Registrer</button>
+            </form>
+            
+            <p class="auth-link">Har du allerede en konto? <a href="/login">Logg inn</a></p>
+            <p><a href="/">Tilbake til forsiden</a></p>
+        </div>
+    </main>
+</body>
+</html>
+

@@ -10,77 +10,83 @@
 <body>
     <header>
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
-        <nav aria-label="Hovednavigasjon">
-            <a href="/add" class="nav-link nav-button">Legg til vurdering</a>
-        </nav>
     </header>
 
-    <main>
-        <!-- Assessments List -->
-        <section aria-labelledby="list-title">
-            <h2 id="list-title">Alle vurderinger</h2>
-            
-            <% if (assessments && assessments.length > 0) { %>
-                <div class="cards-grid">
-                    <% assessments.forEach(function(assessment) { %>
-                        <article class="assessment-card">
-                            <header>
-                                <h3><%= assessment.websiteName %></h3>
-                            </header>
-
-                            <figure>
-                                <img src="<%= assessment.imageUrl %>" 
-                                     alt="Skjermbilde av <%= assessment.websiteName %> nettside" 
-                                     class="card-image">
-                            </figure>
-
-                            <div class="card-content">
-                                <div class="card-meta">
-                                    <span class="username">Av: <%= assessment.username %></span>
-                                </div>
-
-                                <section aria-labelledby="assessment-<%= assessment.id %>">
-                                    <h4 id="assessment-<%= assessment.id %>">Vurdering</h4>
-                                    <p><%= assessment.assessment %></p>
-                                </section>
-
-                                <section aria-labelledby="score-<%= assessment.id %>">
-                                    <h4 id="score-<%= assessment.id %>">Score</h4>
-                                    <p class="score" role="img" aria-label="Score: <%= assessment.score %> av 5">
-                                        <% for(var i = 1; i <= 5; i++) { %>
-                                            <span class="star <%= i <= assessment.score ? 'filled' : '' %>">★</span>
-                                        <% } %>
-                                        <span class="score-text">(<%= assessment.score %>/5)</span>
-                                    </p>
-                                </section>
-
-                                <% if (assessment.criteriaChecked && assessment.criteriaChecked.length > 0) { %>
-                                    <section aria-labelledby="criteria-<%= assessment.id %>">
-                                        <h4 id="criteria-<%= assessment.id %>">Sjekkliste</h4>
-                                        <ul>
-                                            <% assessment.criteriaChecked.forEach(function(criterion) { %>
-                                                <li><%= criterion %></li>
-                                            <% }); %>
-                                        </ul>
-                                    </section>
-                                <% } %>
-                            </div>
-
-                            <footer>
-                                <a href="<%= assessment.websiteUrl %>" 
-                                   class="visit-button" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer">
-                                    Besøk nettsiden
-                                </a>
-                            </footer>
-                        </article>
-                    <% }); %>
-                </div>
+    <nav class="nav" role="navigation" aria-label="Hovedmeny">
+        <div class="nav-brand">
+            <a href="/">WCAG Vurderinger</a>
+        </div>
+        <div class="nav-links">
+            <% if (user) { %>
+                <span>Logget inn som: <strong><%= user.username %></strong></span>
+                <a href="/add">Legg til vurdering</a>
+                <a href="/logout" class="btn-logout">Logg ut</a>
             <% } else { %>
-                <p class="no-assessments">Ingen vurderinger tilgjengelig.</p>
+                <a href="/login">Logg inn</a>
+                <a href="/register">Registrer</a>
             <% } %>
-        </section>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <% if (user) { %>
+            <a href="/add" class="add-button">+ Legg til ny vurdering</a>
+        <% } %>
+
+        <% if (assessments && assessments.length > 0) { %>
+            <% assessments.forEach(function(assessment) { %>
+                <article class="assessment-card">
+                    <header>
+                        <h2><%= assessment.websiteName %></h2>
+                        <p class="reviewer-info">Anmeldt av: <strong><%= assessment.username %></strong></p>
+                    </header>
+
+                    <figure>
+                        <img src="<%= assessment.imageUrl %>" 
+                             alt="Skjermbilde av <%= assessment.websiteName %> nettside" 
+                             class="website-image">
+                    </figure>
+
+                    <section aria-labelledby="assessment-title">
+                        <h3 id="assessment-title">Vurdering</h3>
+                        <p><%= assessment.assessment %></p>
+                    </section>
+
+                    <section aria-labelledby="score-title">
+                        <h3 id="score-title">Score</h3>
+                        <p class="score" role="img" aria-label="Score: <%= assessment.score %> av 5">
+                            <span class="score-number"><%= assessment.score %></span>
+                            <span class="score-max">/5</span>
+                        </p>
+                    </section>
+
+                    <% if (assessment.criteriaChecked && assessment.criteriaChecked.length > 0) { %>
+                        <section aria-labelledby="criteria-title">
+                            <h3 id="criteria-title">Sjekkliste</h3>
+                            <ul>
+                                <% assessment.criteriaChecked.forEach(function(criterion) { %>
+                                    <li><%= criterion %></li>
+                                <% }); %>
+                            </ul>
+                        </section>
+                    <% } %>
+
+                    <footer>
+                        <a href="<%= assessment.websiteUrl %>" 
+                           class="visit-button" 
+                           target="_blank" 
+                           rel="noopener noreferrer">
+                            Besøk nettsiden
+                        </a>
+                    </footer>
+                </article>
+            <% }); %>
+        <% } else { %>
+            <p>Ingen vurderinger tilgjengelig.</p>
+            <% if (!user) { %>
+                <p><a href="/login">Logg inn</a> for å legge til en vurdering.</p>
+            <% } %>
+        <% } %>
     </main>
 
     <footer class="page-footer">

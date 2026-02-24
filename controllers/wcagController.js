@@ -1,4 +1,3 @@
-const User = require('../models/User');
 const Website = require('../models/Website');
 const Review = require('../models/Review');
 
@@ -19,6 +18,7 @@ async function getAllAssessments() {
             assessment: review.assessment,
             score: review.score,
             username: review.user.username,
+            userId: review.user._id,
             criteriaChecked: review.criteriaChecked || [],
             createdAt: review.createdAt
         }));
@@ -46,6 +46,7 @@ async function getAssessmentById(id) {
             assessment: review.assessment,
             score: review.score,
             username: review.user.username,
+            userId: review.user._id,
             criteriaChecked: review.criteriaChecked || [],
             createdAt: review.createdAt
         };
@@ -55,16 +56,9 @@ async function getAssessmentById(id) {
     }
 }
 
-// Add new assessment
-async function addAssessment(data) {
+// Add new assessment (requires authenticated user)
+async function addAssessment(data, userId) {
     try {
-        // Find or create user
-        let user = await User.findOne({ username: data.username });
-        if (!user) {
-            user = new User({ username: data.username });
-            await user.save();
-        }
-
         // Find or create website
         let website = await Website.findOne({ url: data.websiteUrl });
         if (!website) {
@@ -76,9 +70,9 @@ async function addAssessment(data) {
             await website.save();
         }
 
-        // Create review
+        // Create review with user reference
         const review = new Review({
-            user: user._id,
+            user: userId,
             website: website._id,
             score: parseInt(data.score) || 3,
             assessment: data.assessment,
@@ -87,6 +81,9 @@ async function addAssessment(data) {
 
         await review.save();
         
+        // Get user info
+        const user = await require('../models/User').findById(userId);
+        
         return {
             id: review._id,
             websiteName: website.name,
@@ -94,7 +91,7 @@ async function addAssessment(data) {
             imageUrl: website.imageUrl,
             assessment: review.assessment,
             score: review.score,
-            username: user.username,
+            username: user ? user.username : 'Ukjent',
             criteriaChecked: review.criteriaChecked
         };
     } catch (error) {
