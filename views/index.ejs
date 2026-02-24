@@ -12,86 +12,191 @@
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
     </header>
 
-    <nav class="nav" role="navigation" aria-label="Hovedmeny">
-        <div class="nav-brand">
-            <a href="/">WCAG Vurderinger</a>
-        </div>
-        <div class="nav-links">
-            <% if (user) { %>
-                <span>Logget inn som: <strong><%= user.username %></strong></span>
-                <a href="/add">Legg til vurdering</a>
-                <a href="/logout" class="btn-logout">Logg ut</a>
-            <% } else { %>
-                <a href="/login">Logg inn</a>
-                <a href="/register">Registrer</a>
-            <% } %>
-        </div>
+    <nav>
+        <a href="/">Alle vurderinger</a>
+        <% if (user) { %>
+            <a href="/add">+ Legg til vurdering</a>
+            <a href="/logout">Logg ut</a>
+        <% } else { %>
+            <a href="/login">Logg inn</a>
+            <a href="/register">Registrer</a>
+        <% } %>
     </nav>
 
-    <main id="main-content">
-        <% if (user) { %>
-            <a href="/add" class="add-button">+ Legg til ny vurdering</a>
-        <% } %>
-
+    <main>
         <% if (assessments && assessments.length > 0) { %>
             <% assessments.forEach(function(assessment) { %>
                 <article class="assessment-card">
                     <header>
-                        <h2><%= assessment.websiteName %></h2>
-                        <p class="reviewer-info">Anmeldt av: <strong><%= assessment.username %></strong></p>
+                        <h2>
+                            <a href="<%= assessment.websiteUrl %>" target="_blank" rel="noopener noreferrer">
+                                <%= assessment.websiteName %>
+                            </a>
+                        </h2>
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar"><%= assessment.username.charAt(0).toUpperCase() %></div>
+                            <span><%= assessment.username %></span>
+                            <% if (assessment.createdAt) { %>
+                                <span class="created-at"><%= new Date(assessment.createdAt).toLocaleDateString('nb-NO') %></span>
+                            <% } %>
+                        </div>
                     </header>
 
-                    <figure>
-                        <img src="<%= assessment.imageUrl %>" 
-                             alt="Skjermbilde av <%= assessment.websiteName %> nettside" 
-                             class="website-image">
-                    </figure>
+                    <div class="website-preview">
+                        <% if (assessment.imageUrl && assessment.imageUrl !== 'https://via.placeholder.com/600x400?text=No+Image') { %>
+                            <img src="<%= assessment.imageUrl %>" alt="Skjermbilde av <%= assessment.websiteName %>" class="website-image">
+                        <% } else { %>
+                            <div class="website-image-placeholder">?</div>
+                        <% } %>
+                    </div>
 
-                    <section aria-labelledby="assessment-title">
-                        <h3 id="assessment-title">Vurdering</h3>
+                    <div class="score-badge">
+                        Score: <%= assessment.score %>/100
+                    </div>
+
+                    <div class="assessment-content">
+                        <h3>Vurdering</h3>
                         <p><%= assessment.assessment %></p>
-                    </section>
-
-                    <section aria-labelledby="score-title">
-                        <h3 id="score-title">Score</h3>
-                        <p class="score" role="img" aria-label="Score: <%= assessment.score %> av 5">
-                            <span class="score-number"><%= assessment.score %></span>
-                            <span class="score-max">/5</span>
-                        </p>
-                    </section>
+                    </div>
 
                     <% if (assessment.criteriaChecked && assessment.criteriaChecked.length > 0) { %>
-                        <section aria-labelledby="criteria-title">
-                            <h3 id="criteria-title">Sjekkliste</h3>
-                            <ul>
+                        <div class="assessment-content">
+                            <h3>Sjekkliste</h3>
+                            <div class="criteria-list">
                                 <% assessment.criteriaChecked.forEach(function(criterion) { %>
-                                    <li><%= criterion %></li>
+                                    <span class="criteria-tag"><%= criterion %></span>
                                 <% }); %>
-                            </ul>
-                        </section>
+                            </div>
+                        </div>
                     <% } %>
 
-                    <footer>
-                        <a href="<%= assessment.websiteUrl %>" 
-                           class="visit-button" 
-                           target="_blank" 
-                           rel="noopener noreferrer">
-                            Besøk nettsiden
-                        </a>
-                    </footer>
+                    <% if (assessment.wave && (assessment.wave.errors > 0 || assessment.wave.alerts > 0 || assessment.wave.features > 0 || assessment.wave.structuralElements > 0 || assessment.wave.html5AndARIA > 0)) { %>
+                        <div class="wave-section">
+                            <h3>WAVE Vurdering</h3>
+                            <div class="wave-results">
+                                <div class="wave-item wave-errors">
+                                    <span class="wave-label">Feil</span>
+                                    <span class="wave-value"><%= assessment.wave.errors || 0 %></span>
+                                </div>
+                                <div class="wave-item wave-alerts">
+                                    <span class="wave-label">Advarsler</span>
+                                    <span class="wave-value"><%= assessment.wave.alerts || 0 %></span>
+                                </div>
+                                <div class="wave-item wave-features">
+                                    <span class="wave-label">Funksjoner</span>
+                                    <span class="wave-value"><%= assessment.wave.features || 0 %></span>
+                                </div>
+                                <div class="wave-item wave-structural">
+                                    <span class="wave-label">Strukturelt</span>
+                                    <span class="wave-value"><%= assessment.wave.structuralElements || 0 %></span>
+                                </div>
+                                <div class="wave-item wave-aria">
+                                    <span class="wave-label">ARIA/HTML5</span>
+                                    <span class="wave-value"><%= assessment.wave.html5AndARIA || 0 %></span>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <div class="votes-section">
+                        <button class="vote-btn vote-up <%= assessment.userVote === 'up' ? 'active-up' : '' %>" 
+                                data-review-id="<%= assessment.id %>"
+                                data-vote="up"
+                                aria-label="Upvote"
+                                <%= !user ? 'disabled title="Logg inn for å stemme"' : '' %>>
+                            ▲
+                        </button>
+                        <span class="vote-count"><%= assessment.totalVotes || 0 %></span>
+                        <button class="vote-btn vote-down <%= assessment.userVote === 'down' ? 'active-down' : '' %>" 
+                                data-review-id="<%= assessment.id %>"
+                                data-vote="down"
+                                aria-label="Downvote"
+                                <%= !user ? 'disabled title="Logg inn for å stemme"' : '' %>>
+                            ▼
+                        </button>
+                    </div>
+
+                    <a href="<%= assessment.websiteUrl %>" class="visit-button" target="_blank" rel="noopener noreferrer">
+                        Besok nettsiden
+                    </a>
                 </article>
             <% }); %>
         <% } else { %>
-            <p>Ingen vurderinger tilgjengelig.</p>
-            <% if (!user) { %>
-                <p><a href="/login">Logg inn</a> for å legge til en vurdering.</p>
-            <% } %>
+            <div class="form-section">
+                <h2>Ingen vurderinger enda</h2>
+                <p>Var den forste til a legge til en WCAG vurdering!</p>
+                <% if (!user) { %>
+                    <p style="margin-top: 1rem;">
+                        <a href="/login" class="btn btn-primary">Logg inn</a> 
+                        eller 
+                        <a href="/register" class="btn btn-secondary">Registrer deg</a>
+                    </p>
+                <% } %>
+            </div>
         <% } %>
     </main>
 
-    <footer class="page-footer">
+    <footer>
         <p>WCAG vurderingsapplikasjon</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const voteButtons = document.querySelectorAll('.vote-btn');
+            
+            voteButtons.forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const reviewId = this.dataset.reviewId;
+                    const vote = this.dataset.vote;
+                    
+                    try {
+                        const response = await fetch('/vote/' + reviewId, {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ vote })
+                        });
+                        
+                        // Check for 401 Unauthorized
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        
+                        const data = await response.json();
+                        console.log('Vote response:', data);
+                        
+                        if (data.success) {
+                            // Find the vote section within the clicked button's container
+                            const voteSection = btn.closest('.votes-section');
+                            const upBtn = voteSection.querySelector('.vote-up');
+                            const downBtn = voteSection.querySelector('.vote-down');
+                            const voteCount = voteSection.querySelector('.vote-count');
+                            
+                            voteCount.textContent = data.totalVotes;
+                            
+                            upBtn.classList.remove('active-up', 'active-down');
+                            downBtn.classList.remove('active-up', 'active-down');
+                            
+                            if (data.userVote === 'up') {
+                                upBtn.classList.add('active-up');
+                            } else if (data.userVote === 'down') {
+                                downBtn.classList.add('active-down');
+                            }
+                        } else if (data.error) {
+                            alert(data.error);
+                            if (data.error.includes('logget')) {
+                                window.location.href = '/login';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Vote error:', error);
+                        alert('En feil oppstod ved stemme: ' + error.message);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 

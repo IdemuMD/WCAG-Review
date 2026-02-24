@@ -11,21 +11,71 @@ const reviewSchema = new mongoose.Schema({
         ref: 'Website',
         required: true
     },
+    // WAVE Score (calculated from WAVE evaluation)
     score: {
         type: Number,
         required: true,
-        min: 1,
-        max: 5
+        min: 0,
+        max: 100
     },
     assessment: {
         type: String,
         required: true,
-        trim: true,
-        minlength: 10
+        trim: true
     },
     criteriaChecked: [{
         type: String,
         trim: true
+    }],
+    // WAVE Evaluation Results
+    wave: {
+        errors: {
+            type: Number,
+            default: 0
+        },
+        alerts: {
+            type: Number,
+            default: 0
+        },
+        features: {
+            type: Number,
+            default: 0
+        },
+        structuralElements: {
+            type: Number,
+            default: 0
+        },
+        html5AndARIA: {
+            type: Number,
+            default: 0
+        },
+        // Raw WAVE results as JSON for reference
+        rawResults: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {}
+        },
+        evaluatedAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    upvotes: {
+        type: Number,
+        default: 0
+    },
+    downvotes: {
+        type: Number,
+        default: 0
+    },
+    votedBy: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        vote: {
+            type: String,
+            enum: ['up', 'down']
+        }
     }],
     createdAt: {
         type: Date,
@@ -36,6 +86,12 @@ const reviewSchema = new mongoose.Schema({
 // Compound index for efficient queries
 reviewSchema.index({ website: 1, createdAt: -1 });
 reviewSchema.index({ user: 1, createdAt: -1 });
+reviewSchema.index({ upvotes: -1, downvotes: -1, createdAt: -1 });
+
+// Virtual for total score
+reviewSchema.virtual('totalVotes').get(function() {
+    return this.upvotes - this.downvotes;
+});
 
 // Virtual for formatted score
 reviewSchema.virtual('scoreFormatted').get(function() {

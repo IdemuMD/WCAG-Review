@@ -10,45 +10,79 @@
 <body>
     <header>
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
-        <nav aria-label="Hovednavigasjon">
-            <a href="/" class="nav-link">Alle vurderinger</a>
-        </nav>
     </header>
 
+    <nav>
+        <a href="/">Alle vurderinger</a>
+    </nav>
+
     <main>
-        <section class="form-section" aria-labelledby="form-title">
-            <h2 id="form-title">Legg til ny vurdering</h2>
+        <section class="form-section">
+            <h2>Legg til ny vurdering</h2>
             
-            <form action="/add" method="POST" class="assessment-form">
+            <form action="/add" method="POST">
                 <div class="form-group">
-                    <label for="username">Brukernavn</label>
-                    <input type="text" id="username" name="username" required placeholder="Ditt navn">
-                </div>
-                
-                <div class="form-group">
-                    <label for="websiteName">Navn på nettsted</label>
+                    <label for="websiteName">Navn pa nettsted</label>
                     <input type="text" id="websiteName" name="websiteName" required placeholder="Eksempel: Min Nettside">
                 </div>
                 
                 <div class="form-group">
                     <label for="websiteUrl">Nettsted URL</label>
-                    <input type="url" id="websiteUrl" name="websiteUrl" required placeholder="https://example.com">
+                    <input type="url" id="websiteUrl" name="websiteUrl" required placeholder="https://example.com" oninput="updatePreview()">
+                    <span class="help-text">Skriv inn nettadressen for å se en forhåndsvisning</span>
+                </div>
+                
+                <div class="form-group" id="preview-container" style="display: none;">
+                    <label>Forhåndsvisning</label>
+                    <div class="website-preview">
+                        <img id="preview-image" src="" alt="Forhåndsvisning av nettside">
+                        <div class="website-image-placeholder" style="display: none;">Kunne ikke laste forhåndsvisning</div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="imageUrl">Bilde-URL (valgfritt)</label>
-                    <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                    <label for="score">WAVE Score (0-100)</label>
+                    <input type="number" id="score" name="score" min="0" max="100" value="100" required>
+                    <span class="help-text">Score basert pa WAVE-evaluasjon (0-100). Hoyere er bedre.</span>
                 </div>
-                
-                <div class="form-group">
-                    <label for="score">WCAG Score (1-5)</label>
-                    <input type="number" id="score" name="score" min="1" max="5" value="3" required>
-                    <span class="help-text">1 = Dårlig, 5 = Utmerket</span>
-                </div>
+
+                <fieldset class="wave-fieldset">
+                    <legend>WAVE Tilgjengelighetsvurdering</legend>
+                    <span class="help-text">Fyll inn resultatene fra <a href="https://wave.webaim.org/" target="_blank">WAVE Web Accessibility Evaluation Tool</a></span>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="waveErrors">Feil (Errors)</label>
+                            <input type="number" id="waveErrors" name="waveErrors" min="0" value="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="waveAlerts">Advarsler (Alerts)</label>
+                            <input type="number" id="waveAlerts" name="waveAlerts" min="0" value="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="waveFeatures">Funksjoner (Features)</label>
+                            <input type="number" id="waveFeatures" name="waveFeatures" min="0" value="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="waveStructural">Strukturelle elementer</label>
+                            <input type="number" id="waveStructural" name="waveStructural" min="0" value="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waveARIA">HTML5 og ARIA</label>
+                        <input type="number" id="waveARIA" name="waveARIA" min="0" value="0" required>
+                    </div>
+                </fieldset>
                 
                 <div class="form-group">
                     <label for="assessment">WCAG Vurdering</label>
-                    <textarea id="assessment" name="assessment" required rows="4" placeholder="Beskriv tilgjengeligheten til nettstedet..."></textarea>
+                    <textarea id="assessment" name="assessment" required rows="5" placeholder="Beskriv tilgjengeligheten til nettstedet..."></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -65,9 +99,39 @@
         </section>
     </main>
 
-    <footer class="page-footer">
+    <footer>
         <p>WCAG vurderingsapplikasjon</p>
     </footer>
+
+    <script>
+        function updatePreview() {
+            const urlInput = document.getElementById('websiteUrl');
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            const placeholder = previewContainer.querySelector('.website-image-placeholder');
+            
+            let url = urlInput.value.trim();
+            
+            // Reset state
+            previewImage.style.display = 'block';
+            placeholder.style.display = 'none';
+            
+            // Only show preview if URL looks valid
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                previewContainer.style.display = 'block';
+                // Use thum.io for live preview
+                previewImage.src = `https://image.thum.io/get/width/1200/crop/675/${encodeURIComponent(url)}`;
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+        
+        // Handle image load errors
+        document.getElementById('preview-image').addEventListener('error', function() {
+            this.style.display = 'none';
+            this.nextElementSibling.style.display = 'flex';
+        });
+    </script>
 </body>
 </html>
 

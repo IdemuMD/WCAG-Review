@@ -76,6 +76,12 @@ function isAuthenticated(req, res, next) {
     if (req.session.userId) {
         return next();
     }
+    
+    // For AJAX requests, return JSON error
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        return res.status(401).json({ error: 'Du må være logget inn for å stemme', redirect: '/login' });
+    }
+    
     res.redirect('/login');
 }
 
