@@ -402,29 +402,72 @@ main h2 {
 }
 
 /* Preview in add form */
-#preview-container .website-preview {
-    margin-top: 0.5rem;
+#preview-container .link-preview-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
     border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 0.5rem;
 }
 
-#preview-container .website-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-}
-
-#preview-container .website-image-placeholder {
-    width: 100%;
-    height: 120px;
-    background: var(--border);
+#preview-container .link-preview-icon {
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #cbd5e0;
+    font-size: 2rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+#preview-container .link-preview-icon img {
+    width: 32px;
+    height: 32px;
+}
+
+#preview-container .link-preview-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#preview-container .link-preview-title {
+    font-weight: 600;
+    color: var(--text);
     font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#preview-container .link-preview-url {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#preview-container .link-preview-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--blue);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#preview-container .link-preview-btn:hover {
+    background: #2b6cb0;
 }
 
 .form-actions {
@@ -608,5 +651,430 @@ footer {
         margin: 1rem;
         padding: 1.25rem;
     }
+}
+
+/* Accessibility - Skip Link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--blue);
+    color: white;
+    padding: 0.5rem 1rem;
+    z-index: 100;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Screen Reader Only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Quick Guide */
+.quick-guide {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-guide h2 {
+    margin-bottom: 0.75rem;
+}
+
+.quick-guide p {
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.quick-guide ul {
+    margin: 0.75rem 0;
+    padding-left: 1.25rem;
+}
+
+.quick-guide li {
+    margin-bottom: 0.375rem;
+    color: var(--text);
+}
+
+.quick-guide .btn {
+    margin-top: 0.75rem;
+}
+
+/* Search and Sort */
+.search-sort-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-end;
+}
+
+.search-form {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-input-group input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.search-input-group input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
+}
+
+.search-button {
+    padding: 0.5rem 1rem;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.search-button:hover {
+    background: #2b6cb0;
+}
+
+.sort-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-form label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.sort-form select {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+}
+
+.sort-form select:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+/* Results Count */
+.results-count {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.view-details-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.view-details-link:hover {
+    background: #f7fafc;
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+/* External Link Icon */
+.external-link-icon {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--blue);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #2b6cb0;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--accent);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: #f7fafc;
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+/* Assessment Detail Page */
+.assessment-detail {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.assessment-detail-header {
+    margin-bottom: 1rem;
+}
+
+.assessment-detail-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.assessment-detail-header h2 a {
+    color: var(--blue);
+    text-decoration: none;
+}
+
+.assessment-detail .website-preview {
+    margin-bottom: 1.5rem;
+}
+
+.assessment-detail .website-image {
+    height: 240px;
+}
+
+.visit-button-large {
+    display: inline-block;
+    margin-top: 0.75rem;
+    background: var(--blue);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.visit-button-large:hover {
+    background: #2b6cb0;
+}
+
+/* Score Section */
+.score-section {
+    background: #f7fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.score-section h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.score-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.score-number {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.score-number.score-good {
+    color: var(--green);
+}
+
+.score-number.score-medium {
+    color: var(--yellow);
+}
+
+.score-number.score-poor {
+    color: var(--red);
+}
+
+.score-max {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+.score-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.assessment-text {
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.criteria-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+/* Assessment Detail Votes */
+.assessment-detail .votes-section {
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+    margin: 1.5rem auto;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.assessment-detail .votes-section h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: none;
+    margin-bottom: 0.75rem;
+    text-align: center;
+}
+
+.vote-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.assessment-detail .vote-btn {
+    flex: 1;
+    max-width: 150px;
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+.vote-count-display {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Assessment Actions */
+.assessment-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+/* Help Page */
+.help-page {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+.help-page h1 {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--blue);
+}
+
+.help-page section {
+    margin-bottom: 2rem;
+}
+
+.help-page h2 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.help-page h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.help-page p {
+    margin-bottom: 0.75rem;
+    line-height: 1.7;
+}
+
+.help-page ol, .help-page ul {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.help-page li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.help-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.help-actions .btn {
+    text-align: center;
 }
 

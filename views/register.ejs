@@ -7,37 +7,40 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <header>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    
+    <header role="banner">
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
     </header>
 
-    <nav>
+    <nav role="navigation" aria-label="Hovednavigasjon">
         <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
         <a href="/login">Logg inn</a>
     </nav>
 
-    <main>
+    <main id="main-content" role="main">
         <div class="auth-container">
             <h2>Registrer deg</h2>
             
             <% if (error) { %>
-                <div class="error-message"><%= error %></div>
+                <div class="error-message" role="alert"><%= error %></div>
             <% } %>
             
             <form action="/register" method="POST" class="auth-form">
                 <div class="form-group">
                     <label for="username">Brukernavn</label>
-                    <input type="text" id="username" name="username" required minlength="3">
+                    <input type="text" id="username" name="username" required minlength="3" autocomplete="username">
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Passord</label>
-                    <input type="password" id="password" name="password" required minlength="6">
+                    <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
                 </div>
                 
                 <div class="form-group">
                     <label for="confirmPassword">Bekreft passord</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
                 </div>
                 
                 <button type="submit" class="btn-primary-full">Registrer</button>
@@ -49,7 +52,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         <p>WCAG vurderingsapplikasjon</p>
     </footer>
 </body>

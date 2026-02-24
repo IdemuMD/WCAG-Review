@@ -8,47 +8,56 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <header>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    
+    <header role="banner">
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
     </header>
 
-    <nav>
+    <nav role="navigation" aria-label="Hovednavigasjon">
         <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
     </nav>
 
-    <main>
+    <main id="main-content" role="main">
         <section class="form-section">
             <h2>Legg til ny vurdering</h2>
             
             <form action="/add" method="POST">
                 <div class="form-group">
-                    <label for="websiteName">Navn pa nettsted</label>
+                    <label for="websiteName">Navn på nettsted</label>
                     <input type="text" id="websiteName" name="websiteName" required placeholder="Eksempel: Min Nettside">
                 </div>
                 
                 <div class="form-group">
                     <label for="websiteUrl">Nettsted URL</label>
                     <input type="url" id="websiteUrl" name="websiteUrl" required placeholder="https://example.com" oninput="updatePreview()">
-                    <span class="help-text">Skriv inn nettadressen for å se en forhåndsvisning</span>
+                    <span class="help-text" id="url-help">Skriv inn nettadressen for å se en forhåndsvisning</span>
                 </div>
                 
-                <div class="form-group" id="preview-container" style="display: none;">
-                    <label>Forhåndsvisning</label>
-                    <div class="website-preview">
-                        <img id="preview-image" src="" alt="Forhåndsvisning av nettside">
-                        <div class="website-image-placeholder" style="display: none;">Kunne ikke laste forhåndsvisning</div>
+                <div class="form-group" id="preview-container" style="display: none;" aria-live="polite">
+                    <label id="preview-label">Forhåndsvisning</label>
+                    <div class="link-preview-card" id="preview-card">
+                        <div class="link-preview-icon" id="preview-icon">🌐</div>
+                        <div class="link-preview-info">
+                            <div class="link-preview-title" id="preview-title">Nettside</div>
+                            <div class="link-preview-url" id="preview-url"></div>
+                        </div>
+                        <a id="preview-link" href="#" class="link-preview-btn" target="_blank" rel="noopener noreferrer">
+                            Åpne ↗
+                        </a>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="score">WAVE Score (0-100)</label>
-                    <input type="number" id="score" name="score" min="0" max="100" value="100" required>
-                    <span class="help-text">Score basert pa WAVE-evaluasjon (0-100). Hoyere er bedre.</span>
+                    <input type="number" id="score" name="score" min="0" max="100" value="100" required aria-describedby="score-help">
+                    <span class="help-text" id="score-help">Score basert på WAVE-evaluasjon (0-100). Høyere er bedre.</span>
                 </div>
 
                 <fieldset class="wave-fieldset">
                     <legend>WAVE Tilgjengelighetsvurdering</legend>
-                    <span class="help-text">Fyll inn resultatene fra <a href="https://wave.webaim.org/" target="_blank">WAVE Web Accessibility Evaluation Tool</a></span>
+                    <span class="help-text">Fyll inn resultatene fra <a href="https://wave.webaim.org/" target="_blank" rel="noopener noreferrer">WAVE Web Accessibility Evaluation Tool <span class="sr-only">(åpnes i ny fane)</span></a></span>
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -82,13 +91,14 @@
                 
                 <div class="form-group">
                     <label for="assessment">WCAG Vurdering</label>
-                    <textarea id="assessment" name="assessment" required rows="5" placeholder="Beskriv tilgjengeligheten til nettstedet..."></textarea>
+                    <textarea id="assessment" name="assessment" required minlength="10" rows="5" placeholder="Beskriv tilgjengeligheten til nettstedet..." aria-describedby="assessment-help"></textarea>
+                    <span class="help-text" id="assessment-help">Minimum 10 tegn. Beskriv nettsidens tilgjengelighet.</span>
                 </div>
                 
                 <div class="form-group">
                     <label for="criteriaChecked">Sjekkliste (valgfritt)</label>
-                    <input type="text" id="criteriaChecked" name="criteriaChecked" placeholder="Kriterium 1, Kriterium 2">
-                    <span class="help-text">Skriv flere kriterier separert med komma</span>
+                    <input type="text" id="criteriaChecked" name="criteriaChecked" placeholder="Kriterium 1, Kriterium 2" aria-describedby="criteria-help">
+                    <span class="help-text" id="criteria-help">Skriv flere kriterier separert med komma</span>
                 </div>
                 
                 <div class="form-actions">
@@ -99,7 +109,7 @@
         </section>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         <p>WCAG vurderingsapplikasjon</p>
     </footer>
 
@@ -107,30 +117,51 @@
         function updatePreview() {
             const urlInput = document.getElementById('websiteUrl');
             const previewContainer = document.getElementById('preview-container');
-            const previewImage = document.getElementById('preview-image');
-            const placeholder = previewContainer.querySelector('.website-image-placeholder');
+            const previewTitle = document.getElementById('preview-title');
+            const previewUrl = document.getElementById('preview-url');
+            const previewLink = document.getElementById('preview-link');
+            const previewIcon = document.getElementById('preview-icon');
             
             let url = urlInput.value.trim();
-            
-            // Reset state
-            previewImage.style.display = 'block';
-            placeholder.style.display = 'none';
             
             // Only show preview if URL looks valid
             if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
                 previewContainer.style.display = 'block';
-                // Use thum.io for live preview
-                previewImage.src = `https://image.thum.io/get/width/1200/crop/675/${encodeURIComponent(url)}`;
+                
+                // Extract domain and pathname for display
+                let domain = url;
+                let pathname = '';
+                try {
+                    const urlObj = new URL(url);
+                    domain = urlObj.hostname;
+                    pathname = urlObj.pathname;
+                    if (pathname === '/') pathname = '';
+                } catch (e) {
+                    // Use as-is
+                }
+                
+                // Update preview card
+                previewTitle.textContent = document.getElementById('websiteName').value || domain;
+                previewUrl.textContent = domain + pathname;
+                previewLink.href = url;
+                
+                // Try to get favicon
+                previewIcon.textContent = '🌐';
+                
+                // Try to fetch favicon from Google
+                const img = new Image();
+                img.onload = function() {
+                    previewIcon.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="" style="width:32px;height:32px;">`;
+                };
+                img.onerror = function() {
+                    previewIcon.textContent = '🌐';
+                };
+                img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                
             } else {
                 previewContainer.style.display = 'none';
             }
         }
-        
-        // Handle image load errors
-        document.getElementById('preview-image').addEventListener('error', function() {
-            this.style.display = 'none';
-            this.nextElementSibling.style.display = 'flex';
-        });
     </script>
 </body>
 </html>

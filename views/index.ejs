@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <header>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    
+    <header role="banner">
         <h1>WCAG Tilgjengelighetsvurderinger</h1>
     </header>
 
-    <nav>
+    <nav role="navigation" aria-label="Hovednavigasjon">
         <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
         <% if (user) { %>
             <a href="/add">+ Legg til vurdering</a>
             <a href="/logout">Logg ut</a>
@@ -23,19 +26,73 @@
         <% } %>
     </nav>
 
-    <main>
+    <main id="main-content" role="main">
+        <!-- Quick Guide -->
+        <section class="quick-guide" aria-labelledby="guide-heading">
+            <h2 id="guide-heading">Hva er WCAG?</h2>
+            <p>WCAG (Web Content Accessibility Guidelines) er internasjonale retningslinjer for tilgjengelighet på nett. Denne siden lar deg vurdere og dele tilgjengeligheten til ulike nettsider.</p>
+            <ul>
+                <li><strong>Søk</strong> etter nettsider du er interessert i</li>
+                <li><strong>Sortér</strong> etter beste score, mest populær eller nyeste</li>
+                <li><strong>Stem</strong> på vurderinger du synes er nyttige</li>
+                <li><strong>Legg til</strong> dine egne WCAG-vurderinger</li>
+            </ul>
+            <a href="/help" class="btn btn-secondary">Les mer om WCAG</a>
+        </section>
+
+        <!-- Search and Sort -->
+        <section class="search-sort-section" aria-labelledby="search-heading">
+            <h2 id="search-heading" class="sr-only">Søk og sorter</h2>
+            <form action="/search" method="GET" class="search-form">
+                <div class="search-input-group">
+                    <label for="search-q" class="sr-only">Søk etter nettside eller vurdering</label>
+                    <input 
+                        type="search" 
+                        id="search-q" 
+                        name="q" 
+                        value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+                        placeholder="Søk etter nettside, vurdering eller bruker..."
+                        aria-describedby="search-help"
+                    >
+                    <button type="submit" class="search-button">Søk</button>
+                </div>
+                <span id="search-help" class="sr-only">Skriv søkeord og trykk søk for å finne vurderinger</span>
+            </form>
+
+            <form action="/" method="GET" class="sort-form">
+                <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+                    <input type="hidden" name="q" value="<%= searchQuery %>">
+                <% } %>
+                <label for="sort-select">Sorter etter:</label>
+                <select id="sort-select" name="sort" onchange="this.form.submit()">
+                    <option value="popular" <%= typeof sortBy !== 'undefined' && sortBy === 'popular' ? 'selected' : '' %>>Mest populær</option>
+                    <option value="score" <%= typeof sortBy !== 'undefined' && sortBy === 'score' ? 'selected' : '' %>>Beste WCAG-score</option>
+                    <option value="newest" <%= typeof sortBy !== 'undefined' && sortBy === 'newest' ? 'selected' : '' %>>Nyeste først</option>
+                </select>
+            </form>
+        </section>
+
+        <!-- Results count -->
+        <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+            <p class="results-count" role="status" aria-live="polite">
+                Fant <%= assessments.length %> resultat<%= assessments.length !== 1 ? 'er' : '' %> for "<%= searchQuery %>"
+            </p>
+        <% } %>
+
+        <!-- Assessment List -->
         <% if (assessments && assessments.length > 0) { %>
             <% assessments.forEach(function(assessment) { %>
-                <article class="assessment-card">
+                <article class="assessment-card" aria-labelledby="assessment-<%= assessment.id %>">
                     <header>
-                        <h2>
+                        <h2 id="assessment-<%= assessment.id %>">
                             <a href="<%= assessment.websiteUrl %>" target="_blank" rel="noopener noreferrer">
                                 <%= assessment.websiteName %>
                             </a>
+                            <span class="external-link-icon" aria-hidden="true">(ekstern lenke)</span>
                         </h2>
                         <div class="reviewer-info">
-                            <div class="reviewer-avatar"><%= assessment.username.charAt(0).toUpperCase() %></div>
-                            <span><%= assessment.username %></span>
+                            <div class="reviewer-avatar" aria-hidden="true"><%= assessment.username.charAt(0).toUpperCase() %></div>
+                            <span>Av <span class="username"><%= assessment.username %></span></span>
                             <% if (assessment.createdAt) { %>
                                 <span class="created-at"><%= new Date(assessment.createdAt).toLocaleDateString('nb-NO') %></span>
                             <% } %>
@@ -46,11 +103,11 @@
                         <% if (assessment.imageUrl && assessment.imageUrl !== 'https://via.placeholder.com/600x400?text=No+Image') { %>
                             <img src="<%= assessment.imageUrl %>" alt="Skjermbilde av <%= assessment.websiteName %>" class="website-image">
                         <% } else { %>
-                            <div class="website-image-placeholder">?</div>
+                            <div class="website-image-placeholder" aria-label="Ingen forhåndsvisning tilgjengelig">?</div>
                         <% } %>
                     </div>
 
-                    <div class="score-badge">
+                    <div class="score-badge" aria-label="WCAG-score: <%= assessment.score %> av 100">
                         Score: <%= assessment.score %>/100
                     </div>
 
@@ -62,35 +119,35 @@
                     <% if (assessment.criteriaChecked && assessment.criteriaChecked.length > 0) { %>
                         <div class="assessment-content">
                             <h3>Sjekkliste</h3>
-                            <div class="criteria-list">
+                            <div class="criteria-list" role="list" aria-label="WCAG-kriterier">
                                 <% assessment.criteriaChecked.forEach(function(criterion) { %>
-                                    <span class="criteria-tag"><%= criterion %></span>
+                                    <span class="criteria-tag" role="listitem"><%= criterion %></span>
                                 <% }); %>
                             </div>
                         </div>
                     <% } %>
 
                     <% if (assessment.wave && (assessment.wave.errors > 0 || assessment.wave.alerts > 0 || assessment.wave.features > 0 || assessment.wave.structuralElements > 0 || assessment.wave.html5AndARIA > 0)) { %>
-                        <div class="wave-section">
-                            <h3>WAVE Vurdering</h3>
-                            <div class="wave-results">
-                                <div class="wave-item wave-errors">
+                        <div class="wave-section" aria-labelledby="wave-heading-<%= assessment.id %>">
+                            <h3 id="wave-heading-<%= assessment.id %>">WAVE Vurdering</h3>
+                            <div class="wave-results" role="list" aria-label="WAVE-analyse resultater">
+                                <div class="wave-item wave-errors" role="listitem">
                                     <span class="wave-label">Feil</span>
                                     <span class="wave-value"><%= assessment.wave.errors || 0 %></span>
                                 </div>
-                                <div class="wave-item wave-alerts">
+                                <div class="wave-item wave-alerts" role="listitem">
                                     <span class="wave-label">Advarsler</span>
                                     <span class="wave-value"><%= assessment.wave.alerts || 0 %></span>
                                 </div>
-                                <div class="wave-item wave-features">
+                                <div class="wave-item wave-features" role="listitem">
                                     <span class="wave-label">Funksjoner</span>
                                     <span class="wave-value"><%= assessment.wave.features || 0 %></span>
                                 </div>
-                                <div class="wave-item wave-structural">
+                                <div class="wave-item wave-structural" role="listitem">
                                     <span class="wave-label">Strukturelt</span>
                                     <span class="wave-value"><%= assessment.wave.structuralElements || 0 %></span>
                                 </div>
-                                <div class="wave-item wave-aria">
+                                <div class="wave-item wave-aria" role="listitem">
                                     <span class="wave-label">ARIA/HTML5</span>
                                     <span class="wave-value"><%= assessment.wave.html5AndARIA || 0 %></span>
                                 </div>
@@ -98,46 +155,61 @@
                         </div>
                     <% } %>
 
-                    <div class="votes-section">
+                    <div class="votes-section" aria-label="Stemme-seksjon">
                         <button class="vote-btn vote-up <%= assessment.userVote === 'up' ? 'active-up' : '' %>" 
                                 data-review-id="<%= assessment.id %>"
                                 data-vote="up"
-                                aria-label="Upvote"
+                                aria-label="Stem positivt, antall stemmer: <%= assessment.totalVotes || 0 %>"
+                                aria-pressed="<%= assessment.userVote === 'up' %>"
                                 <%= !user ? 'disabled title="Logg inn for å stemme"' : '' %>>
                             ▲
+                            <span class="sr-only">Stem positivt</span>
                         </button>
-                        <span class="vote-count"><%= assessment.totalVotes || 0 %></span>
+                        <span class="vote-count" aria-hidden="true"><%= assessment.totalVotes || 0 %></span>
                         <button class="vote-btn vote-down <%= assessment.userVote === 'down' ? 'active-down' : '' %>" 
                                 data-review-id="<%= assessment.id %>"
                                 data-vote="down"
-                                aria-label="Downvote"
+                                aria-label="Stem negativt, antall stemmer: <%= assessment.totalVotes || 0 %>"
+                                aria-pressed="<%= assessment.userVote === 'down' %>"
                                 <%= !user ? 'disabled title="Logg inn for å stemme"' : '' %>>
                             ▼
+                            <span class="sr-only">Stem negativt</span>
                         </button>
                     </div>
 
-                    <a href="<%= assessment.websiteUrl %>" class="visit-button" target="_blank" rel="noopener noreferrer">
-                        Besok nettsiden
-                    </a>
+                    <div class="card-actions">
+                        <a href="/assessment/<%= assessment.id %>" class="view-details-link" aria-label="Se detaljert vurdering av <%= assessment.websiteName %>">
+                            Se detaljer
+                        </a>
+                        <a href="<%= assessment.websiteUrl %>" class="visit-button" target="_blank" rel="noopener noreferrer">
+                            Besøk nettsiden <span class="sr-only">(ekstern lenke)</span>
+                        </a>
+                    </div>
                 </article>
             <% }); %>
         <% } else { %>
             <div class="form-section">
-                <h2>Ingen vurderinger enda</h2>
-                <p>Var den forste til a legge til en WCAG vurdering!</p>
-                <% if (!user) { %>
-                    <p style="margin-top: 1rem;">
-                        <a href="/login" class="btn btn-primary">Logg inn</a> 
-                        eller 
-                        <a href="/register" class="btn btn-secondary">Registrer deg</a>
-                    </p>
+                <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+                    <h2>Ingen resultater funnet</h2>
+                    <p>Ingen vurderinger matcher søket "<%= searchQuery %>". Prøv et annet søkeord.</p>
+                    <a href="/" class="btn btn-secondary">Tilbake til alle vurderinger</a>
+                <% } else { %>
+                    <h2>Ingen vurderinger enda</h2>
+                    <p>Vær den første til å legge til en WCAG vurdering!</p>
+                    <% if (!user) { %>
+                        <p style="margin-top: 1rem;">
+                            <a href="/login" class="btn btn-primary">Logg inn</a> 
+                            eller 
+                            <a href="/register" class="btn btn-secondary">Registrer deg</a>
+                        </p>
+                    <% } %>
                 <% } %>
             </div>
         <% } %>
     </main>
 
-    <footer>
-        <p>WCAG vurderingsapplikasjon</p>
+    <footer role="contentinfo">
+        <p>WCAG vurderingsapplikasjon - Tilgjengelighet for alle</p>
     </footer>
 
     <script>

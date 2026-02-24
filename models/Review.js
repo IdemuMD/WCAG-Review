@@ -21,6 +21,7 @@ const reviewSchema = new mongoose.Schema({
     assessment: {
         type: String,
         required: true,
+        minlength: 10,
         trim: true
     },
     criteriaChecked: [{

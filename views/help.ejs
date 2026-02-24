@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hjelp og informasjon om WCAG vurderingssystemet">
+    <title>Hjelp - WCAG Vurderinger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+    
+    <header role="banner">
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+    </header>
+
+    <nav role="navigation" aria-label="Hovednavigasjon">
+        <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
+        <% if (user) { %>
+            <a href="/add">+ Legg til vurdering</a>
+            <a href="/logout">Logg ut</a>
+        <% } else { %>
+            <a href="/login">Logg inn</a>
+            <a href="/register">Registrer</a>
+        <% } %>
+    </nav>
+
+    <main id="main-content" role="main">
+        <article class="help-page">
+            <h1>Hjelp og informasjon</h1>
+            
+            <section aria-labelledby="what-is-wcag">
+                <h2 id="what-is-wcag">Hva er WCAG?</h2>
+                <p>WCAG (Web Content Accessibility Guidelines) er et sett med internasjonale retningslinjer for tilgjengelighet på nett. Disse retningslinjene ble utviklet av W3C (World Wide Web Consortium) for å sikre at nettsider er tilgjengelige for alle, uavhengig av funksjonshemninger.</p>
+                <p>WCAG-retningslinjene er delt inn i fire prinsipper:</p>
+                <ol>
+                    <li><strong>Mulig å oppfatte</strong> - Informasjon må presenteres på måter som brukerne kan oppfatte</li>
+                    <li><strong>Mulig å betjene</strong> - Grensesnittet må være mulig å betjene</li>
+                    <li><strong>Forståelig</strong> - Informasjon og betjening må være forståelig</li>
+                    <li><strong>Robust</strong> - Innholdet må være robust nok til å tolkes av ulike brukeragenter</li>
+                </ol>
+            </section>
+
+            <section aria-labelledby="what-is-wcag-score">
+                <h2 id="what-is-wcag-score">Hva betyr WCAG-scoren?</h2>
+                <p>WCAG-scoren (0-100) gir en indikasjon på hvor godt en nettside følger tilgjengelighetsretningslinjene:</p>
+                <ul>
+                    <li><strong>90-100:</strong> Utmerket - Nettsiden følger WCAG-retningslinjene svært godt</li>
+                    <li><strong>70-89:</strong> God - Nettsiden har mindre problemer som bør rettes</li>
+                    <li><strong>50-69:</strong> Moderat - Nettsiden har flere tilgjengelighetsproblemer</li>
+                    <li><strong>0-49:</strong> Dårlig - Nettsiden har betydelige tilgjengelighetsproblemer</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="what-is-wave">
+                <h2 id="what-is-wave">Hva er WAVE?</h2>
+                <p>WAVE (Web Accessibility Evaluation Tool) er et verktøy som hjelper til med å evaluere tilgjengeligheten til nettsider. Verktøyet identifiserer ulike typer problemer:</p>
+                <ul>
+                    <li><strong>Feil:</strong> Alvorlige tilgjengelighetsproblemer som må rettes</li>
+                    <li><strong>Advarsler:</strong> Potensielle problemer som bør vurderes</li>
+                    <li><strong>Funksjoner:</strong> Tilgjengelighetsfunksjoner som er på plass</li>
+                    <li><strong>Strukturelle elementer:</strong> Semantisk HTML-struktur</li>
+                    <li><strong>ARIA:</strong> Bruk av ARIA-standarder for tilgjengelighet</li>
+                </ul>
+            </section>
+
+            <section aria-labelledby="how-to-use">
+                <h2 id="how-to-use">Hvordan bruke denne siden</h2>
+                
+                <h3>Søke etter vurderinger</h3>
+                <p>Bruk søkefeltet på forsiden for å finne vurderinger av spesifikke nettsider. Du kan søke på nettstedsnavn, URL, vurderingstekst eller brukernavn.</p>
+                
+                <h3>Sortere vurderinger</h3>
+                <p>Du kan sortere vurderinger etter:</p>
+                <ul>
+                    <li><strong>Mest populær:</strong> Vurderinger med flest positive stemmer</li>
+                    <li><strong>Beste WCAG-score:</strong> Nettsider med høyest tilgjengelighetsscore</li>
+                    <li><strong>Nyeste først:</strong> Nylig publiserte vurderinger</li>
+                </ul>
+                
+                <h3>Stemme på vurderinger</h3>
+                <p>Du kan stemme på vurderinger du synes er nyttige. Klikk på pil opp (▲) hvis du synes vurderingen er nyttig, eller pil ned (▼) hvis den ikke er det. Du må være logget inn for å stemme.</p>
+                
+                <h3>Legge til egne vurderinger</h3>
+                <p>For å legge til en egen WCAG-vurdering:</p>
+                <ol>
+                    <li>Logg inn eller registrer deg</li>
+                    <li>Klikk på "Legg til vurdering"</li>
+                    <li>Fyll inn nettstedets navn og URL</li>
+                    <li>Angi WCAG-scoren basert på din egen vurdering</li>
+                    <li>Eventuelt fylle inn WAVE-analyse-resultater</li>
+                    <li>Skriv en detaljert vurdering av nettsidens tilgjengelighet</li>
+                    <li>Velg eventuelt hvilke WCAG-kriterier som er dekket</li>
+                </ol>
+            </section>
+
+            <section aria-labelledby="accessibility">
+                <h2 id="accessibility">Tilgjengelighet på denne siden</h2>
+                <p>Denne nettsiden er designet med tanke på WCAG-retningslinjene. Vi har implementert:</p>
+                <ul>
+                    <li>God kontrast mellom tekst og bakgrunn</li>
+                    <li>Tydelig navigasjonsstruktur</li>
+                    <li>Alternativ tekst for bilder</li>
+                    <li>Mulighet for å navigere med tastatur</li>
+                    <li>ARIA-landemerker for skjermlesere</li>
+                    <li>Skip-link for å hoppe til hovedinnhold</li>
+                </ul>
+                <p>Hvis du oppdager tilgjengelighetsproblemer på denne siden, vennligst <a href="mailto:support@example.com">kontakt oss</a>.</p>
+            </section>
+
+            <section aria-labelledby="contact">
+                <h2 id="contact">Kontakt oss</h2>
+                <p>Har du spørsmål eller forslag til forbedringer? Ta gjerne kontakt med oss.</p>
+            </section>
+
+            <div class="help-actions">
+                <a href="/" class="btn btn-primary">Se alle vurderinger</a>
+                <% if (!user) { %>
+                    <a href="/register" class="btn btn-secondary">Registrer deg</a>
+                <% } else { %>
+                    <a href="/add" class="btn btn-secondary">Legg til vurdering</a>
+                <% } %>
+            </div>
+        </article>
+    </main>
+
+    <footer role="contentinfo">
+        <p>WCAG vurderingsapplikasjon - Tilgjengelighet for alle</p>
+    </footer>
+</body>
+</html>
+

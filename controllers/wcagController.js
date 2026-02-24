@@ -3,12 +3,38 @@ const Website = require('../models/Website');
 const Review = require('../models/Review');
 
 // Get all reviews with user and website info
-async function getAllAssessments(userId = null) {
+async function getAllAssessments(userId = null, searchQuery = '', sortBy = 'popular') {
     try {
-        const reviews = await Review.find()
+        let query = {};
+        
+        // Add search functionality
+        if (searchQuery) {
+            const regex = new RegExp(searchQuery, 'i');
+            query.$or = [
+                { 'website.name': regex },
+                { 'website.url': regex },
+                { assessment: regex },
+                { 'user.username': regex }
+            ];
+        }
+        
+        let sortOption = {};
+        switch (sortBy) {
+            case 'score':
+                sortOption = { score: -1 };
+                break;
+            case 'newest':
+                sortOption = { createdAt: -1 };
+                break;
+            case 'popular':
+            default:
+                sortOption = { upvotes: -1, downvotes: 1, createdAt: -1 };
+        }
+        
+        const reviews = await Review.find(query)
             .populate('user', 'username')
             .populate('website', 'name url imageUrl')
-            .sort({ upvotes: -1, downvotes: 1, createdAt: -1 })
+            .sort(sortOption)
             .lean();
         
         return reviews.map(review => {
@@ -120,6 +146,10 @@ async function addAssessment(data, userId) {
         // Validate assessment text
         if (!data.assessment || data.assessment.trim().length === 0) {
             throw new Error('Vurderingsteksten er påkrevd');
+        }
+        
+        if (data.assessment.trim().length < 10) {
+            throw new Error('Vurderingsteksten må være minst 10 tegn');
         }
         
         // Find or create website
