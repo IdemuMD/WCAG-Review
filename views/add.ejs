@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Legg til ny WCAG vurdering">
+    <title>Legg til vurdering - WCAG</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+        <nav aria-label="Hovednavigasjon">
+            <a href="/" class="nav-link">Alle vurderinger</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-section" aria-labelledby="form-title">
+            <h2 id="form-title">Legg til ny vurdering</h2>
+            
+            <form action="/add" method="POST" class="assessment-form">
+                <div class="form-group">
+                    <label for="username">Brukernavn</label>
+                    <input type="text" id="username" name="username" required placeholder="Ditt navn">
+                </div>
+                
+                <div class="form-group">
+                    <label for="websiteName">Navn på nettsted</label>
+                    <input type="text" id="websiteName" name="websiteName" required placeholder="Eksempel: Min Nettside">
+                </div>
+                
+                <div class="form-group">
+                    <label for="websiteUrl">Nettsted URL</label>
+                    <input type="url" id="websiteUrl" name="websiteUrl" required placeholder="https://example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageUrl">Bilde-URL (valgfritt)</label>
+                    <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div class="form-group">
+                    <label for="score">WCAG Score (1-5)</label>
+                    <input type="number" id="score" name="score" min="1" max="5" value="3" required>
+                    <span class="help-text">1 = Dårlig, 5 = Utmerket</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="assessment">WCAG Vurdering</label>
+                    <textarea id="assessment" name="assessment" required rows="4" placeholder="Beskriv tilgjengeligheten til nettstedet..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="criteriaChecked">Sjekkliste (valgfritt)</label>
+                    <input type="text" id="criteriaChecked" name="criteriaChecked" placeholder="Kriterium 1, Kriterium 2">
+                    <span class="help-text">Skriv flere kriterier separert med komma</span>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="/" class="cancel-button">Avbryt</a>
+                    <button type="submit" class="submit-button">Legg til vurdering</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="page-footer">
+        <p>WCAG vurderingsapplikasjon</p>
+    </footer>
+</body>
+</html>
+

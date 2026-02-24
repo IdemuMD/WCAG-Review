@@ -19,13 +19,49 @@ body {
 header {
     background-color: #2c3e50;
     color: white;
-    padding: 1.5rem;
-    text-align: center;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 header h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link:focus {
+    outline: 2px solid #f39c12;
+    outline-offset: 2px;
+}
+
+.nav-button {
+    background-color: #3498db;
+    font-weight: 600;
+}
+
+.nav-button:hover {
+    background-color: #2980b9;
 }
 
 /* Main Content */
@@ -51,12 +87,19 @@ main h2 {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-section h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 .assessment-form {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
@@ -68,7 +111,7 @@ main h2 {
 .form-group label {
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: #555;
+    color: #2c3e50;
 }
 
 .form-group input,
@@ -78,6 +121,7 @@ main h2 {
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus,
@@ -87,8 +131,20 @@ main h2 {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
+.help-text {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
 .submit-button {
-    background-color: #3498db;
+    background-color: #27ae60;
     color: white;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -97,11 +153,11 @@ main h2 {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    justify-self: start;
+    flex: 1;
 }
 
 .submit-button:hover {
-    background-color: #2980b9;
+    background-color: #219a52;
 }
 
 .submit-button:focus {
@@ -109,10 +165,32 @@ main h2 {
     outline-offset: 2px;
 }
 
+.cancel-button {
+    display: inline-block;
+    background-color: #95a5a6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    flex: 1;
+}
+
+.cancel-button:hover {
+    background-color: #7f8c8d;
+}
+
+.cancel-button:focus {
+    outline: 3px solid #f39c12;
+    outline-offset: 2px;
+}
+
 /* Cards Grid */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
 }
 
@@ -137,6 +215,7 @@ main h2 {
     color: white;
     padding: 1rem;
     text-align: center;
+    display: block;
 }
 
 .assessment-card header h3 {
@@ -163,12 +242,25 @@ main h2 {
     flex: 1;
 }
 
+.card-meta {
+    margin-bottom: 0.75rem;
+}
+
+.username {
+    display: inline-block;
+    background-color: #ecf0f1;
+    color: #7f8c8d;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
 .card-content section {
     margin-bottom: 1rem;
 }
 
 .card-content section h4 {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #7f8c8d;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -189,19 +281,24 @@ main h2 {
     margin-bottom: 0.25rem;
 }
 
-/* Score Display */
+/* Score Display with Stars */
 .score {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #27ae60;
+    font-size: 1.25rem;
 }
 
-.score-number {
-    font-size: 2rem;
+.star {
+    color: #ddd;
+    font-size: 1.25rem;
 }
 
-.score-max {
+.star.filled {
+    color: #f39c12;
+}
+
+.score-text {
     color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
 }
 
 /* Visit Button */
@@ -260,8 +357,14 @@ main h2 {
 
 /* Responsive */
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 1.5rem;
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav {
+        width: 100%;
+        justify-content: center;
     }
 
     .cards-grid {
@@ -269,11 +372,11 @@ main h2 {
     }
 
     .form-section {
-        padding: 1rem;
+        padding: 1.5rem;
     }
 
-    .submit-button {
-        width: 100%;
+    .form-actions {
+        flex-direction: column;
     }
 }
 
@@ -282,16 +385,16 @@ main h2 {
         padding: 0 0.75rem;
     }
 
+    header h1 {
+        font-size: 1.25rem;
+    }
+
     .assessment-card header h3 {
         font-size: 1.1rem;
     }
 
-    .score {
-        font-size: 1.25rem;
-    }
-
-    .score-number {
-        font-size: 1.5rem;
+    .form-section {
+        padding: 1rem;
     }
 }
 
