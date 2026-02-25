@@ -1,11 +1,12 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const connectDB = require('./config/database');
+const mongoose = require('mongoose');
 const wcagRoutes = require('./routes/wcagRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://10.12.2.181:27017/wcag_reviews';
 
 // Session configuration
 app.use(session({
@@ -31,14 +32,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Make user available to all views
 app.use((req, res, next) => {
-    res.locals.user = req.session.username ? { username: req.session.username } : null;
+    res.locals.user = req.session.userId ? { 
+        username: req.session.username,
+        role: req.session.userRole 
+    } : null;
     next();
 });
 
 // Connect to MongoDB and start server
 async function startServer() {
     try {
-        await connectDB();
+        await mongoose.connect(MONGODB_URI, {
+            serverSelectionTimeoutMS: 30000,
+            connectTimeoutMS: 30000
+        });
+        console.log('MongoDB Connected Successfully');
         
         // Use routes
         app.use('/', wcagRoutes);

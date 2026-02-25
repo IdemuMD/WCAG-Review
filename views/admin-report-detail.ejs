@@ -17,8 +17,14 @@
         <a href="/">Alle vurderinger</a>
         <a href="/help">Hjelp</a>
         <a href="/faq">FAQ</a>
-        <a href="/admin/reports">Admin</a>
-        <a href="/logout">Logg ut</a>
+        <% if (user && user.role === 'admin') { %>
+            <a href="/admin/reports" class="active">Admin</a>
+        <% } %>
+        <% if (user) { %>
+            <a href="/logout">Logg ut</a>
+        <% } else { %>
+            <a href="/login">Logg inn</a>
+        <% } %>
     </nav>
 
     <main id="main-content" role="main">
@@ -123,6 +129,16 @@
                     </div>
                     
                     <button type="submit" class="btn btn-primary">Oppdater rapport</button>
+                </form>
+            </div>
+        <% } %>
+
+        <% if (report.reviewId) { %>
+            <div class="delete-review-card">
+                <h2>Slett vurdering</h2>
+                <p class="warning-text">Vær oppmerksom: Denne handlingen kan ikke angres!</p>
+                <form action="/admin/delete-review/<%= report.reviewId %>?redirect=/admin/reports" method="POST" onsubmit="return confirm('Er du sikker på at du vil slette denne vurderingen? Denne handlingen kan ikke angres.');">
+                    <button type="submit" class="btn btn-danger">Slett vurdering</button>
                 </form>
             </div>
         <% } %>

@@ -221,9 +221,78 @@ async function addAssessment(data, userId) {
     }
 }
 
+// Delete a review (admin only)
+async function deleteReview(reviewId) {
+    try {
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            throw new Error('Vurdering ikke funnet');
+        }
+        
+        // Delete associated reports
+        const Report = require('../models/Report');
+        await Report.deleteMany({ review: reviewId });
+        
+        await Review.findByIdAndDelete(reviewId);
+        return { success: true, message: 'Vurdering slettet' };
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        throw error;
+    }
+}
+
+// Delete a review and optionally resolve reports (admin only)
+async function deleteReviewWithReportResolution(reviewId, adminUserId) {
+    try {
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            throw new Error('Vurdering ikke funnet');
+        }
+        
+        // Resolve associated reports instead of deleting them
+        const Report = require('../models/Report');
+        await Report.updateMany(
+            { review: reviewId, status: 'pending' },
+            { 
+                status: 'resolved',
+                reviewedBy: adminUserId,
+                reviewComment: 'Vurdering slettet av administrator'
+            }
+        );
+        
+        await Review.findByIdAndDelete(reviewId);
+        return { success: true, message: 'Vurdering slettet og rapporter løst' };
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        throw error;
+    }
+}
+
+// Delete a website (admin only)
+async function deleteWebsite(websiteId) {
+    try {
+        const website = await Website.findById(websiteId);
+        if (!website) {
+            throw new Error('Nettside ikke funnet');
+        }
+        
+        // Delete all reviews associated with this website
+        await Review.deleteMany({ website: websiteId });
+        
+        await Website.findByIdAndDelete(websiteId);
+        return { success: true, message: 'Nettside og tilknyttede vurderinger slettet' };
+    } catch (error) {
+        console.error('Error deleting website:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllAssessments,
     getAssessmentById,
-    addAssessment
+    addAssessment,
+    deleteReview,
+    deleteReviewWithReportResolution,
+    deleteWebsite
 };
 

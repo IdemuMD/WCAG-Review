@@ -18,13 +18,14 @@ async function register(req, res) {
             return res.render('register', { error: 'Brukernavn er allerede tatt' });
         }
         
-        // Create new user
-        const user = new User({ username, password });
+        // Create new user (default role is 'user')
+        const user = new User({ username, password, role: 'user' });
         await user.save();
         
         // Set session
         req.session.userId = user._id;
         req.session.username = user.username;
+        req.session.userRole = user.role;
         
         res.redirect('/');
     } catch (error) {
@@ -53,6 +54,7 @@ async function login(req, res) {
         // Set session
         req.session.userId = user._id;
         req.session.username = user.username;
+        req.session.userRole = user.role;
         
         // Redirect to the specified page or home
         const redirectTo = redirect && redirect.startsWith('/') ? redirect : '/';

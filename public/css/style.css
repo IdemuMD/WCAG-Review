@@ -1453,6 +1453,45 @@ footer {
     text-decoration: underline;
 }
 
+/* Delete Review Card */
+.delete-review-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.delete-review-card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--red);
+}
+
+.warning-text {
+    color: var(--red);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.btn-danger {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: #c53030;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .admin-table {

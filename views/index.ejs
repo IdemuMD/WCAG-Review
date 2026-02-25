@@ -20,6 +20,9 @@
         <a href="/faq">FAQ</a>
         <% if (user) { %>
             <a href="/add">+ Legg til vurdering</a>
+            <% if (user.role === 'admin') { %>
+                <a href="/admin/reports">Rapporter</a>
+            <% } %>
             <a href="/logout">Logg ut</a>
         <% } else { %>
             <a href="/login">Logg inn</a>

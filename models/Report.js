@@ -47,14 +47,15 @@ const reportSchema = new mongoose.Schema({
 });
 
 // Update timestamp on save
-reportSchema.pre('save', function(next) {
+reportSchema.pre('save', async function() {
     this.updatedAt = new Date();
-    next();
 });
 
 // Index for efficient queries
 reportSchema.index({ status: 1, createdAt: -1 });
 reportSchema.index({ review: 1 });
 
-module.exports = mongoose.model('Report', reportSchema);
+const Report = mongoose.model('Report', reportSchema);
+
+module.exports = Report;
 

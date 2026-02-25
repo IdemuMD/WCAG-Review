@@ -18,6 +18,16 @@
         <a href="/">Alle vurderinger</a>
         <a href="/help">Hjelp</a>
         <a href="/faq">FAQ</a>
+        <% if (user) { %>
+            <a href="/add">+ Legg til vurdering</a>
+            <% if (user.role === 'admin') { %>
+                <a href="/admin/reports">Rapporter</a>
+            <% } %>
+            <a href="/logout">Logg ut</a>
+        <% } else { %>
+            <a href="/login">Logg inn</a>
+            <a href="/register">Registrer</a>
+        <% } %>
     </nav>
 
     <main id="main-content" role="main">

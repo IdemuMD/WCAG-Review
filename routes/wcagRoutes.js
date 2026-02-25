@@ -45,7 +45,11 @@ router.get('/faq', faqController.getFAQ);
 // Report a review
 router.post('/report/:reviewId', authController.isAuthenticated, async (req, res) => {
     try {
-        const result = await reportController.createReport(req.body, req.session.userId);
+        const reportData = {
+            ...req.body,
+            reviewId: req.params.reviewId
+        };
+        const result = await reportController.createReport(reportData, req.session.userId);
         res.redirect(`/assessment/${req.params.reviewId}?report=success`);
     } catch (error) {
         console.error('Error in POST /report:', error);
@@ -61,7 +65,10 @@ router.get('/', async (req, res) => {
         const sortBy = req.query.sort || 'popular'; // popular, score, newest
         
         const assessments = await wcagController.getAllAssessments(userId, searchQuery, sortBy);
-        const user = req.session.username ? { username: req.session.username } : null;
+        const user = req.session.userId ? { 
+            username: req.session.username,
+            role: req.session.userRole 
+        } : null;
         
         res.render('index', { 
             assessments, 
@@ -83,7 +90,10 @@ router.get('/search', async (req, res) => {
         const sortBy = req.query.sort || 'popular';
         
         const assessments = await wcagController.getAllAssessments(userId, searchQuery, sortBy);
-        const user = req.session.username ? { username: req.session.username } : null;
+        const user = req.session.userId ? { 
+            username: req.session.username,
+            role: req.session.userRole 
+        } : null;
         
         res.render('index', { 
             assessments, 
@@ -99,7 +109,11 @@ router.get('/search', async (req, res) => {
 
 // Add assessment form (requires login)
 router.get('/add', authController.isAuthenticated, (req, res) => {
-    res.render('add', { user: { username: req.session.username } });
+    const user = { 
+        username: req.session.username,
+        role: req.session.userRole
+    };
+    res.render('add', { user });
 });
 
 // Add assessment POST (requires login)
@@ -143,7 +157,10 @@ router.get('/assessment/:id', async (req, res) => {
     try {
         const userId = req.session.userId || null;
         const assessment = await wcagController.getAssessmentById(req.params.id, userId);
-        const user = req.session.username ? { username: req.session.username } : null;
+        const user = req.session.userId ? { 
+            username: req.session.username,
+            role: req.session.userRole 
+        } : null;
         
         if (assessment) {
             // Check for report query params
@@ -180,11 +197,21 @@ async function isAdmin(req, res, next) {
         }
         
         req.user = user;
+        req.userWithRole = { username: user.username, role: user.role };
         next();
     } catch (error) {
         console.error('Admin check error:', error);
         res.status(500).send('Serverfeil');
     }
+}
+
+// Helper to get user object with role
+async function getUserWithRole(userId) {
+    if (!userId) return null;
+    const User = require('../models/User');
+    const user = await User.findById(userId);
+    if (!user) return null;
+    return { username: user.username, role: user.role };
 }
 
 // Admin - reports list
@@ -193,13 +220,12 @@ router.get('/admin/reports', isAdmin, async (req, res) => {
         const status = req.query.status || null;
         const reports = await reportController.getAllReports(status);
         const counts = await reportController.getReportCounts();
-        const user = req.session.username ? { username: req.session.username } : null;
         
         res.render('admin-reports', {
             reports,
             counts,
             currentStatus: status,
-            user
+            user: req.userWithRole
         });
     } catch (error) {
         console.error('Error in GET /admin/reports:', error);
@@ -216,13 +242,12 @@ router.get('/admin/reports/:id', isAdmin, async (req, res) => {
             return res.status(404).send('Rapport ikke funnet');
         }
         
-        const user = req.session.username ? { username: req.session.username } : null;
         const success = req.query.success === 'true';
         const error = req.query.error ? decodeURIComponent(req.query.error) : null;
         
         res.render('admin-report-detail', {
             report,
-            user,
+            user: req.userWithRole,
             success,
             error
         });
@@ -247,6 +272,31 @@ router.post('/admin/reports/:id/update', isAdmin, async (req, res) => {
     } catch (error) {
         console.error('Error in POST /admin/reports/:id/update:', error);
         res.redirect(`/admin/reports/${req.params.id}?error=${encodeURIComponent(error.message)}`);
+    }
+});
+
+// Admin - delete a review (also resolves associated reports)
+router.post('/admin/delete-review/:id', isAdmin, async (req, res) => {
+    try {
+        await wcagController.deleteReviewWithReportResolution(req.params.id, req.session.userId);
+        
+        // Check if there's a redirect URL
+        const redirectUrl = req.query.redirect || '/admin/reports';
+        res.redirect(`${redirectUrl}?deleted=true`);
+    } catch (error) {
+        console.error('Error in POST /admin/delete-review/:id:', error);
+        res.status(500).send('Feil ved sletting av vurdering: ' + error.message);
+    }
+});
+
+// Admin - delete a website and all its reviews
+router.post('/admin/delete-website/:id', isAdmin, async (req, res) => {
+    try {
+        await wcagController.deleteWebsite(req.params.id);
+        res.redirect('/?deleted=true');
+    } catch (error) {
+        console.error('Error in POST /admin/delete-website/:id:', error);
+        res.status(500).send('Feil ved sletting av nettside: ' + error.message);
     }
 });
 
