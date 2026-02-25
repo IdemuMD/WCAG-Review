@@ -25,7 +25,7 @@ npm install
 npm start
 ```
 
-Serveren starter på http://localhost:3000
+Serveren starter på http://10.12.2.186:3000 eller http://wcag.skynet.ikt-fag.no:3000/
 
 ## Administrator
 
@@ -38,8 +38,6 @@ node create-admin.js
 **Standard admin-bruker:**
 - **Username**: admin
 - **Password**: admin123 (bytt dette etter første pålogging!)
-
-## Autorisering og autentisering
 
 ### Autentisering (Authentication)
 Autentisering bekrefter brukerens identitet. I denne applikasjonen brukes:
@@ -99,10 +97,4 @@ async function isAdmin(req, res, next) {
 - ejs - Template engine
 - express-session - Session management
 - bcryptjs - Password hashing
-
-## .gitignore
-
-Lagt til i .gitignore for å unngå å lagre sensitive filer:
-- cookies*.txt
-- session.json
 
