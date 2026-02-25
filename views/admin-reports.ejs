@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapporter - Admin | WCAG Vurderinger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+
+    <header role="banner">
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+    </header>
+
+    <nav role="navigation" aria-label="Hovednavigasjon">
+        <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
+        <a href="/faq">FAQ</a>
+        <a href="/admin/reports" class="active">Admin</a>
+        <a href="/logout">Logg ut</a>
+    </nav>
+
+    <main id="main-content" role="main">
+        <h1>Admin - Rapporter</h1>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <span class="stat-number"><%= counts.pending %></span>
+                <span class="stat-label">Ventende</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number"><%= counts.reviewed %></span>
+                <span class="stat-label">Under behandling</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number"><%= counts.resolved %></span>
+                <span class="stat-label">Løst</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number"><%= counts.dismissed %></span>
+                <span class="stat-label">Avvist</span>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <a href="/admin/reports" class="tab <%= !currentStatus ? 'active' : '' %>">Alle</a>
+            <a href="/admin/reports?status=pending" class="tab <%= currentStatus === 'pending' ? 'active' : '' %>">Ventende</a>
+            <a href="/admin/reports?status=reviewed" class="tab <%= currentStatus === 'reviewed' ? 'active' : '' %>">Under behandling</a>
+            <a href="/admin/reports?status=resolved" class="tab <%= currentStatus === 'resolved' ? 'active' : '' %>">Løst</a>
+            <a href="/admin/reports?status=dismissed" class="tab <%= currentStatus === 'dismissed' ? 'active' : '' %>">Avvist</a>
+        </div>
+
+        <% if (reports.length === 0) { %>
+            <p class="no-results">Ingen rapporter funnet.</p>
+        <% } else { %>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Dato</th>
+                        <th>Rapportør</th>
+                        <th>Årsak</th>
+                        <th>Kommentar</th>
+                        <th>Status</th>
+                        <th>Handlinger</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reports.forEach(report => { %>
+                        <tr>
+                            <td><%= new Date(report.createdAt).toLocaleDateString('nb-NO') %></td>
+                            <td><%= report.reporterUsername %></td>
+                            <td>
+                                <% if (report.reason === 'inappropriate') { %>Upassende innhold<% } %>
+                                <% if (report.reason === 'incorrect') { %>Feilaktig informasjon<% } %>
+                                <% if (report.reason === 'spam') { %>Spam<% } %>
+                                <% if (report.reason === 'other') { %>Annet<% } %>
+                            </td>
+                            <td><%= report.comment || '-' %></td>
+                            <td>
+                                <span class="status-badge status-<%= report.status %>">
+                                    <% if (report.status === 'pending') { %>Ventende<% } %>
+                                    <% if (report.status === 'reviewed') { %>Under behandling<% } %>
+                                    <% if (report.status === 'resolved') { %>Løst<% } %>
+                                    <% if (report.status === 'dismissed') { %>Avvist<% } %>
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/admin/reports/<%= report.id %>" class="btn btn-small">Se detaljer</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+    </main>
+
+    <footer role="contentinfo">
+        <p>WCAG vurderingsapplikasjon - Tilgjengelighet for alle</p>
+    </footer>
+</body>
+</html>
+

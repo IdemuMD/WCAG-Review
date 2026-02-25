@@ -36,28 +36,30 @@ async function register(req, res) {
 // Login user
 async function login(req, res) {
     try {
-        const { username, password } = req.body;
+        const { username, password, redirect } = req.body;
         
         // Find user
         const user = await User.findOne({ username });
         if (!user) {
-            return res.render('login', { error: 'Feil brukernavn eller passord' });
+            return res.render('login', { error: 'Feil brukernavn eller passord', redirect: redirect || '/' });
         }
         
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.render('login', { error: 'Feil brukernavn eller passord' });
+            return res.render('login', { error: 'Feil brukernavn eller passord', redirect: redirect || '/' });
         }
         
         // Set session
         req.session.userId = user._id;
         req.session.username = user.username;
         
-        res.redirect('/');
+        // Redirect to the specified page or home
+        const redirectTo = redirect && redirect.startsWith('/') ? redirect : '/';
+        res.redirect(redirectTo);
     } catch (error) {
         console.error('Login error:', error);
-        res.render('login', { error: 'Feil ved innlogging' });
+        res.render('login', { error: 'Feil ved innlogging', redirect: '/' });
     }
 }
 

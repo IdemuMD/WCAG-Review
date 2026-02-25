@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://10.12.2.181:27017/wcag_reviews';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://10.12.2.180:27017/wcag_reviews';
 
 const connectDB = async () => {
     try {

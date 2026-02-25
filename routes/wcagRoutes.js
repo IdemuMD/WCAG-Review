@@ -4,13 +4,16 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const wcagController = require('../controllers/wcagController');
 const voteController = require('../controllers/voteController');
+const faqController = require('../controllers/faqController');
+const reportController = require('../controllers/reportController');
 
 // Login page
 router.get('/login', (req, res) => {
     if (req.session.userId) {
         return res.redirect('/');
     }
-    res.render('login', { error: null });
+    const redirect = req.query.redirect || '/';
+    res.render('login', { error: null, redirect });
 });
 
 // Register page
@@ -34,6 +37,20 @@ router.get('/logout', authController.logout);
 router.get('/help', (req, res) => {
     const user = req.session.username ? { username: req.session.username } : null;
     res.render('help', { user });
+});
+
+// FAQ page
+router.get('/faq', faqController.getFAQ);
+
+// Report a review
+router.post('/report/:reviewId', authController.isAuthenticated, async (req, res) => {
+    try {
+        const result = await reportController.createReport(req.body, req.session.userId);
+        res.redirect(`/assessment/${req.params.reviewId}?report=success`);
+    } catch (error) {
+        console.error('Error in POST /report:', error);
+        res.redirect(`/assessment/${req.params.reviewId}?report=error&message=${encodeURIComponent(error.message)}`);
+    }
 });
 
 // Main page - list all assessments with search and sort
@@ -127,14 +144,109 @@ router.get('/assessment/:id', async (req, res) => {
         const userId = req.session.userId || null;
         const assessment = await wcagController.getAssessmentById(req.params.id, userId);
         const user = req.session.username ? { username: req.session.username } : null;
+        
         if (assessment) {
-            res.render('assessment', { assessment, user });
+            // Check for report query params
+            const reportSuccess = req.query.report === 'success';
+            const reportError = req.query.message ? decodeURIComponent(req.query.message) : null;
+            
+            res.render('assessment', { 
+                assessment, 
+                user,
+                reportSuccess,
+                reportError
+            });
         } else {
             res.status(404).send('Vurdering ikke funnet');
         }
     } catch (error) {
         console.error('Error in GET /assessment/:id:', error);
         res.status(500).send('Feil ved henting av vurdering');
+    }
+});
+
+// Admin routes - simple admin check
+async function isAdmin(req, res, next) {
+    try {
+        if (!req.session.userId) {
+            return res.redirect('/login');
+        }
+        
+        const User = require('../models/User');
+        const user = await User.findById(req.session.userId);
+        
+        if (!user || user.role !== 'admin') {
+            return res.status(403).send('Tilgang nektet. Kun administratorer har tilgang til denne siden.');
+        }
+        
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error('Admin check error:', error);
+        res.status(500).send('Serverfeil');
+    }
+}
+
+// Admin - reports list
+router.get('/admin/reports', isAdmin, async (req, res) => {
+    try {
+        const status = req.query.status || null;
+        const reports = await reportController.getAllReports(status);
+        const counts = await reportController.getReportCounts();
+        const user = req.session.username ? { username: req.session.username } : null;
+        
+        res.render('admin-reports', {
+            reports,
+            counts,
+            currentStatus: status,
+            user
+        });
+    } catch (error) {
+        console.error('Error in GET /admin/reports:', error);
+        res.status(500).send('Feil ved henting av rapporter');
+    }
+});
+
+// Admin - view single report
+router.get('/admin/reports/:id', isAdmin, async (req, res) => {
+    try {
+        const report = await reportController.getReportById(req.params.id);
+        
+        if (!report) {
+            return res.status(404).send('Rapport ikke funnet');
+        }
+        
+        const user = req.session.username ? { username: req.session.username } : null;
+        const success = req.query.success === 'true';
+        const error = req.query.error ? decodeURIComponent(req.query.error) : null;
+        
+        res.render('admin-report-detail', {
+            report,
+            user,
+            success,
+            error
+        });
+    } catch (error) {
+        console.error('Error in GET /admin/reports/:id:', error);
+        res.status(500).send('Feil ved henting av rapport');
+    }
+});
+
+// Admin - update report status
+router.post('/admin/reports/:id/update', isAdmin, async (req, res) => {
+    try {
+        const { status, reviewComment } = req.body;
+        await reportController.updateReportStatus(
+            req.params.id,
+            status,
+            reviewComment,
+            req.session.userId
+        );
+        
+        res.redirect(`/admin/reports/${req.params.id}?success=true`);
+    } catch (error) {
+        console.error('Error in POST /admin/reports/:id/update:', error);
+        res.redirect(`/admin/reports/${req.params.id}?error=${encodeURIComponent(error.message)}`);
     }
 });
 

@@ -28,6 +28,7 @@
             <% } %>
             
             <form action="/login" method="POST" class="auth-form">
+                <input type="hidden" name="redirect" value="<%= typeof redirect !== 'undefined' ? redirect : '/' %>">
                 <div class="form-group">
                     <label for="username">Brukernavn</label>
                     <input type="text" id="username" name="username" required autocomplete="username">

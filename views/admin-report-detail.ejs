@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapportdetaljer - Admin | WCAG Vurderinger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+
+    <header role="banner">
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+    </header>
+
+    <nav role="navigation" aria-label="Hovednavigasjon">
+        <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
+        <a href="/faq">FAQ</a>
+        <a href="/admin/reports">Admin</a>
+        <a href="/logout">Logg ut</a>
+    </nav>
+
+    <main id="main-content" role="main">
+        <div class="breadcrumb">
+            <a href="/admin/reports">← Tilbake til rapporter</a>
+        </div>
+
+        <h1>Rapportdetaljer</h1>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success">Oppdateringen var vellykket!</div>
+        <% } %>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="report-detail-grid">
+            <div class="report-info-card">
+                <h2>Rapportinformasjon</h2>
+                
+                <dl>
+                    <dt>Rapportør:</dt>
+                    <dd><%= report.reporterUsername %></dd>
+                    
+                    <dt>Dato rapportert:</dt>
+                    <dd><%= new Date(report.createdAt).toLocaleDateString('nb-NO', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></dd>
+                    
+                    <dt>Årsak:</dt>
+                    <dd>
+                        <% if (report.reason === 'inappropriate') { %>Upassende innhold<% } %>
+                        <% if (report.reason === 'incorrect') { %>Feilaktig informasjon<% } %>
+                        <% if (report.reason === 'spam') { %>Spam<% } %>
+                        <% if (report.reason === 'other') { %>Annet<% } %>
+                    </dd>
+                    
+                    <dt>Kommentar fra rapportør:</dt>
+                    <dd><%= report.comment || 'Ingen kommentar' %></dd>
+                    
+                    <dt>Status:</dt>
+                    <dd>
+                        <span class="status-badge status-<%= report.status %>">
+                            <% if (report.status === 'pending') { %>Ventende<% } %>
+                            <% if (report.status === 'reviewed') { %>Under behandling<% } %>
+                            <% if (report.status === 'resolved') { %>Løst<% } %>
+                            <% if (report.status === 'dismissed') { %>Avvist<% } %>
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="review-info-card">
+                <h2>Vurdering som er rapportert</h2>
+                
+                <% if (report.reviewId) { %>
+                    <p><strong>Vurdering-ID:</strong> <%= report.reviewId %></p>
+                    <p><strong>Vurderingstekst:</strong></p>
+                    <blockquote class="assessment-quote"><%= report.reviewAssessment %></blockquote>
+                    
+                    <a href="/assessment/<%= report.reviewId %>" class="btn btn-secondary" target="_blank">Se vurdering (ny fane)</a>
+                <% } else { %>
+                    <p class="text-muted">Vurderingen er ikke lenger tilgjengelig.</p>
+                <% } %>
+            </div>
+
+            <% if (report.status !== 'pending') { %>
+                <div class="review-result-card">
+                    <h2>Behandlingsresultat</h2>
+                    
+                    <dl>
+                        <% if (report.reviewedBy) { %>
+                            <dt>Behandlet av:</dt>
+                            <dd><%= report.reviewedBy %></dd>
+                        <% } %>
+                        
+                        <% if (report.reviewComment) { %>
+                            <dt>Kommentar:</dt>
+                            <dd><%= report.reviewComment %></dd>
+                        <% } %>
+                    </dl>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (report.status === 'pending') { %>
+            <div class="update-form-card">
+                <h2>Oppdater status</h2>
+                
+                <form action="/admin/reports/<%= report.id %>/update" method="POST">
+                    <div class="form-group">
+                        <label for="status">Ny status:</label>
+                        <select id="status" name="status" required>
+                            <option value="reviewed">Under behandling</option>
+                            <option value="resolved">Løst</option>
+                            <option value="dismissed">Avvist</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reviewComment">Kommentar (valgfritt):</label>
+                        <textarea id="reviewComment" name="reviewComment" rows="3" maxlength="500" placeholder="Skriv en kommentar om behandlingen..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Oppdater rapport</button>
+                </form>
+            </div>
+        <% } %>
+    </main>
+
+    <footer role="contentinfo">
+        <p>WCAG vurderingsapplikasjon - Tilgjengelighet for alle</p>
+    </footer>
+</body>
+</html>
+

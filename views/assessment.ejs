@@ -17,6 +17,7 @@
     <nav role="navigation" aria-label="Hovednavigasjon">
         <a href="/">Alle vurderinger</a>
         <a href="/help">Hjelp</a>
+        <a href="/faq">FAQ</a>
         <% if (user) { %>
             <a href="/add">+ Legg til vurdering</a>
             <a href="/logout">Logg ut</a>
@@ -147,13 +148,54 @@
                 </p>
             </div>
 
+            <% if (typeof reportSuccess !== 'undefined' && reportSuccess) { %>
+                <div class="alert alert-success">Takk for rapporten! Vi vil behandle den.</div>
+            <% } %>
+            
+            <% if (typeof reportError !== 'undefined' && reportError) { %>
+                <div class="alert alert-error"><%= reportError %></div>
+            <% } %>
+
             <div class="assessment-actions">
                 <a href="/" class="btn btn-secondary">← Tilbake til alle vurderinger</a>
+                <% if (user) { %>
+                    <button class="btn btn-report" onclick="document.getElementById('report-modal').style.display='block'">⚠ Rapporter</button>
+                <% } else { %>
+                    <a href="/login?redirect=/assessment/<%= assessment.id %>" class="btn btn-report">⚠ Rapporter (logg inn)</a>
+                <% } %>
                 <a href="<%= assessment.websiteUrl %>" class="visit-button" target="_blank" rel="noopener noreferrer">
                     Besøk nettsiden <span class="sr-only">(ekstern lenke)</span>
                 </a>
             </div>
         </article>
+        
+        <!-- Report Modal -->
+        <% if (user) { %>
+        <div id="report-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="document.getElementById('report-modal').style.display='none'">&times;</span>
+                <h2>Rapporter vurdering</h2>
+                <form action="/report/<%= assessment.id %>" method="POST">
+                    <div class="form-group">
+                        <label for="reason">Årsak:</label>
+                        <select id="reason" name="reason" required>
+                            <option value="">Velg årsak...</option>
+                            <option value="inappropriate">Upassende innhold</option>
+                            <option value="incorrect">Feilaktig informasjon</option>
+                            <option value="spam">Spam</option>
+                            <option value="other">Annet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Kommentar (valgfritt):</label>
+                        <textarea id="comment" name="comment" rows="3" maxlength="500" placeholder="Beskriv hvorfor du rapporterer denne vurderingen..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send rapport</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('report-modal').style.display='none'">Avbryt</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
     </main>
 
     <footer role="contentinfo">

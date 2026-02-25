@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ofte stilte spørsmål om WCAG vurderinger">
+    <title>FAQ - WCAG Vurderinger</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Hopp til hovedinnhold</a>
+
+    <header role="banner">
+        <h1>WCAG Tilgjengelighetsvurderinger</h1>
+    </header>
+
+    <nav role="navigation" aria-label="Hovednavigasjon">
+        <a href="/">Alle vurderinger</a>
+        <a href="/help">Hjelp</a>
+        <a href="/faq" class="active">FAQ</a>
+        <% if (user) { %>
+            <a href="/add">Legg til vurdering</a>
+            <a href="/logout">Logg ut</a>
+        <% } else { %>
+            <a href="/login">Logg inn</a>
+            <a href="/register">Registrer</a>
+        <% } %>
+    </nav>
+
+    <main id="main-content" role="main">
+        <h1>Ofte stilte spørsmål (FAQ)</h1>
+        
+        <p class="intro-text">Her finner du svar på vanlige spørsmål om WCAG-vurderinger og tilgjengelighet på nett.</p>
+
+        <div class="faq-list">
+            <% faqs.forEach((faq, index) => { %>
+                <details class="faq-item">
+                    <summary class="faq-question">
+                        <%= faq.question %>
+                        <span class="faq-icon" aria-hidden="true">+</span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p><%= faq.answer %></p>
+                    </div>
+                </details>
+            <% }); %>
+        </div>
+
+        <section class="contact-section">
+            <h2>Har du flere spørsmål?</h2>
+            <p>Ta kontakt med oss hvis du har spørsmål som ikke er besvart her.</p>
+            <a href="/help" class="btn btn-secondary">Gå til hjelp-siden</a>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <p>WCAG vurderingsapplikasjon - Tilgjengelighet for alle</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                item.addEventListener('toggle', function() {
+                    const icon = this.querySelector('.faq-icon');
+                    if (this.open) {
+                        icon.textContent = '-';
+                    } else {
+                        icon.textContent = '+';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
