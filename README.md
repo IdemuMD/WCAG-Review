@@ -5,7 +5,7 @@ WCAG-Review is a web application for reviewing websites for WCAG (Web Content Ac
 ## Endret konfigurasjon
 
 ### MongoDB
-- **IP**: `10.12.2.180`
+- **IP**: `10.12.2.181`
 - **Port**: `27017`
 - **Database**: `wcag_reviews`
 
